@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>享元模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是享元模式</h1>
+<p>享元Flyweight模式是构造型模式之一，它通过共享数据使得相同对象在内存中仅创建一个实例，以降低系统创建对象实例的性能消耗。</p>
+<p>以博客里写文章为例来说吧，把文章和文章中的文字看作对象，我们每在博客里写一个字就相当于是创建一个文字对象，假如我们写的文章有一万个字，那我们岂不是要创建一万次文字对象，如此频繁的创建对象势必会严重拖累系统的性能。</p>
+<p>享元模式通过数据共享使得重复使用的相同对象在内存中仅创建一次：这就好比汉字中的 “的” 字虽然在文章中反复出现，但它仅在第一次被使用的时候创建 “的” (共享对象)并保存起来，之后再用到 “的” 字的话直接获取之前创建好的 “的” 对象即可，不需要再次创建了。</p>
+<p>下面是两张使用享元模式前后的对比图，看完这两张图相信大家就能理解享元模式的作用了。</p>
+<p>使用享元模式前： 
+<div align=center><img src="./imgs/11.png" alt="静态代理模式结构示意图" title="静态代理模式结构示意图" />
+<div align=left></p>
+<p>使用享元模式后： </p>
+<p><div align=center><img src="./imgs/12.png" alt="静态代理模式结构示意图" title="静态代理模式结构示意图" />
+<div align=left></p>
+<h1>二、享元模式在Java中的典型应用</h1>
+<p>在Java语言中，String类型就使用了享元模式。String对象是final类型，对象一旦创建就不可改变，同时JAVA会确保一个字符串常量（例如：&quot;Flyweight&quot;）在常量池中只能存在一份拷贝,例如下面这段简单代码： </p>
+<pre><code>  String str1=&quot;Flyweight&quot;;
+  String str2=&quot;Flyweight&quot;;
+
+  if(str1==str2){
+   System.out.println(&quot;str1与str2指向同一对象&quot;);
+  }
+  else
+  {
+   System.out.println(&quot;str1与str2指向不同对象&quot;);
+  }
+</code></pre>
+
+<p>打印结果：</p>
+<p><code>str1与str2指向同一对象</code></p>
+<p>在以上代码中if语句比较的是对象str1和str2中存储的内存地址是否相同，从最终的打印结果可以看出：两次创建的字符串常量&quot;Flyweight&quot;内存地址相同，即两个字符串其实是同一个对象。</p>
+<h1>三、享元模式的结构</h1>
+<p>享元模式分为单纯享元模式和复合享元模式两种。</p>
+<h2>单纯享元模式</h2>
+<p><div align=center><img src="./imgs/13.png" alt="静态代理模式结构示意图" title="静态代理模式结构示意图" />
+<div align=left></p>
+<p>单纯享元模式涉及的角色及其职责如下：</p>
+<ul>
+<li>抽象享元(Flyweight)角色：所有具体享元类的父类或实现的接口，以规定所有具体享元角色需要实现的方法。</li>
+<li>具体享元(ConcreteFlyweight)角色：又叫单纯享元角色，是抽象享元角色的具体实现类，如果有内蕴状态的话，它负责为内蕴状态提供存储空间。具体享元对象的内蕴状态必须与对象所处的周围环境无关，从而使得享元对象可以在系统内共享。</li>
+<li>享元工厂(FlyweightFactory)角色：负责创建和管理享元角色。本角色必须保证享元对象可以被系统适当地共享。当客户端调用某个享元对象的时候，享元工厂角色会检查系统中是否已经存在符合要求的享元对象，如果已经存在则直接提供，若不存在则新创建一个。</li>
+</ul>
+<p>单纯享元模式结构示意源代码如下：</p>
+<p>在单纯的享元模式中，Flyweight接口用以规定出所有具体享元角色需要实现的方法。</p>
+<pre><code>public interface Flyweight {
+
+    /**
+     * 用以规定所有具体享元角色需要实现的方法.
+     */
+    void operation(String extrinsicState);
+
+}
+</code></pre>
+
+<p>具体享元ConcreteFlyweight一方面要保存需共享的内蕴状态，另一方面将外蕴状态作为参数传入operation()方法中，可改变方法的行为，但并不改变对象的内蕴状态。 </p>
+<pre><code>public class ConcreteFlyweight implements Flyweight {
+
+    private String intrinsicState = null;
+
+    /**
+     * 构造函数中内蕴状态作为参数传入.
+     */
+    public ConcreteFlyweight(String intrinsicState) {
+        this.intrinsicState = intrinsicState;
+    }
+
+    /**
+     * 外蕴状态作为参数传入方法中，可改变方法的行为，但并不改变对象的内蕴状态.
+     */
+    @Override
+    public void operation(String extrinsicState) {
+        System.out.println();
+        System.out.println(&quot;内蕴状态：&quot; + intrinsicState);
+        System.out.println(&quot;外蕴状态：&quot; + extrinsicState);
+        System.out.println(&quot;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&quot;);
+    }
+
+    public String toString() {
+        return this.intrinsicState;
+    }
+}
+</code></pre>
+
+<p>享元工厂FlyweightFactory负责维护一个享元对象存储池（Flyweight Pool）来存放内部状态的对象。为了调用方便，该工厂类一般使用单例模式来实现。  </p>
+<pre><code>import java.util.HashMap;
+import java.util.Map;
+
+public class FlyweightFactory {
+
+    // 用来登记和存储已经创建过的享元对象
+    private Map&lt;String, Flyweight&gt; flyweightMap = new HashMap&lt;String, Flyweight&gt;();
+
+    // 采用单例模式
+    private static FlyweightFactory flyweightFactory = new FlyweightFactory();
+
+    // 私有化享元工厂的构造方法
+    private FlyweightFactory() {
+    }
+
+    // 获取单例享元工厂的实例
+    public static FlyweightFactory getFlyweightFactory() {
+        return flyweightFactory;
+    }
+
+    public Flyweight getFlyweight(String intrinsicState) {
+        Flyweight flyweight = flyweightMap.get(intrinsicState);
+        if (null == flyweight) {
+            flyweight = new ConcreteFlyweight(intrinsicState);
+            flyweightMap.put(intrinsicState, flyweight);
+        }
+        return flyweight;
+    }
+
+    public Map&lt;String, Flyweight&gt; getFlyweightMap() {
+        return flyweightMap;
+    }
+
+}
+</code></pre>
+
+<p>在Client类中创建的main()方法中进行测试。 </p>
+<pre><code>import java.util.Map.Entry;
+
+public class Client {
+
+    public static void main(String[] args) {
+        FlyweightFactory flyweightFactory = FlyweightFactory.getFlyweightFactory();
+        flyweightFactory.getFlyweight(&quot;爱&quot;).operation(&quot;位置1&quot;);
+        flyweightFactory.getFlyweight(&quot;我&quot;).operation(&quot;位置2&quot;);
+        flyweightFactory.getFlyweight(&quot;的&quot;).operation(&quot;位置3&quot;);
+        flyweightFactory.getFlyweight(&quot;人&quot;).operation(&quot;位置4&quot;);
+        flyweightFactory.getFlyweight(&quot;和&quot;).operation(&quot;位置5&quot;);
+        flyweightFactory.getFlyweight(&quot;我&quot;).operation(&quot;位置6&quot;);
+        flyweightFactory.getFlyweight(&quot;爱&quot;).operation(&quot;位置7&quot;);
+        flyweightFactory.getFlyweight(&quot;的&quot;).operation(&quot;位置8&quot;);
+        flyweightFactory.getFlyweight(&quot;人&quot;).operation(&quot;位置9&quot;);
+
+        System.out.println(&quot;已存储的享元对象个数：&quot;+flyweightFactory.getFlyweightMap().size()+&quot;个&quot;);
+        for (Entry&lt;String, Flyweight&gt; entry : flyweightFactory.getFlyweightMap().entrySet()) {
+            System.out.println(entry.getValue());
+        }
+
+    }
+
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>内蕴状态：爱<br />
+外蕴状态：位置1<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：我<br />
+外蕴状态：位置2<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：的<br />
+外蕴状态：位置3<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：人<br />
+外蕴状态：位置4<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：和<br />
+外蕴状态：位置5<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：我 <br />
+外蕴状态：位置6<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：爱<br />
+外蕴状态：位置7<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：的<br />
+外蕴状态：位置8<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;  </p>
+<p>内蕴状态：人<br />
+外蕴状态：位置9<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br />
+已存储的享元对象个数：5个<br />
+爱<br />
+我<br />
+的<br />
+人<br />
+和  </p>
+<p>从以上程序的运行结果不难看出，虽然我们新建了9个Flyweight对象，但在内存池中实际上只有5个，这就是共享的含义。 </p>
+<h2>复合享元模式</h2>
+<p>在单纯享元模式中，所有的享元对象都是单纯享元对象，也就是说都是可以直接共享的。还有一种较为复杂的情况，将一些单纯享元对象使用合成模式加以组合，形成复合享元对象。这样的复合享元对象本身不能共享，但是它们可以分解成单纯享元对象，而后者则可以共享。  </p>
+<p><div align=center><img src="./imgs/14.png" alt="静态代理模式结构示意图" title="静态代理模式结构示意图" />
+<div align=left></p>
+<p>与单纯享元模式相比，复合享元模式增加了一个复合享元(UnsharedConcreteFlyweight)角色，复合享元角色所代表的对象是不可以共享的，又称作不可共享的享元对象。</p>
+<p>复合享元角色实现了抽象享元角色所规定的接口，也就是operation()方法，这个方法有一个参数，代表复合享元对象的外蕴状态。一个复合享元对象的所有单纯享元对象的外蕴状态都是与复合享元对象的外蕴状态相等的；而一个复合享元对象所含有的单纯享元对象的内蕴状态一般是不相等的，不然就没有使用价值了。</p>
+<p>复合享元模式本质上就相当于将原本掺杂在一起的单纯享元对象，根据不同的外蕴状态重新进行了二次分组。这就好比在饭店点餐时，饭店会将不同顾客点的菜记录在顾客自己的点菜单(账单)上一样，与将所有顾客点的菜都记录到一个点菜单上相比，分开记录很明显更便于管理、一目了然，接下来我们就以点餐为例来学习复合享元模式。</p>
+<p>复合享元模式与单纯享元模式的差异代码如下：</p>
+<p>首先复合享元模式增加了一个不可共享的复合享元(UnsharedConcreteFlyweight)角色。 </p>
+<pre><code>import java.util.HashMap;
+import java.util.Map;
+
+public class UnsharedConcreteFlyweight implements Flyweight {
+
+    //用来登记和存储已经创建过的享元对象
+    private Map&lt;String, Flyweight&gt; flyweightMap = new HashMap&lt;String, Flyweight&gt;();
+
+    //指定所有享元对象的外蕴状态
+    private String extrinsicState = null;
+
+    // 增加一个新的单纯享元对象到集合中
+    public void add(String intrinsicState, Flyweight flyweight) {
+        flyweightMap.put(intrinsicState, flyweight);
+    }
+
+    @Override
+    public void operation(String extrinsicState) {
+        this.extrinsicState = extrinsicState;
+    }
+
+    public void getFlyweight(String intrinsicState){
+        Flyweight flyweight=flyweightMap.get(intrinsicState);
+        if(null!=flyweight){
+            flyweight.operation(extrinsicState);
+        }
+        else{
+            System.out.println();
+            System.out.println(extrinsicState+&quot;未点过:&quot;+intrinsicState);
+            System.out.println(&quot;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&quot;);
+        }
+    }
+
+    public Map&lt;String, Flyweight&gt; getFlyweightMap() {
+        return flyweightMap;
+    }
+
+}
+</code></pre>
+
+<p>享元工厂FlyweightFactory仅需添加一个用于获取复合享元对象的getUnsharedFlyweight()方法，其他代码无需修改。 </p>
+<pre><code>public class FlyweightFactory {
+
+    /**
+     * 此处省略单纯享元模式中享元工厂已有代码
+     * ...
+     * ...
+     * 原有代码不变，仅新增一个getUnsharedFlyweight()方法.
+     */
+
+    public UnsharedConcreteFlyweight getUnsharedFlyweight(List&lt;String&gt; intrinsicStates) {
+        UnsharedConcreteFlyweight unsharedFlyweight = new UnsharedConcreteFlyweight();
+        for (String intrinsicState : intrinsicStates) {
+            unsharedFlyweight.add(intrinsicState, getFlyweight(intrinsicState));
+        }
+        return unsharedFlyweight;
+    }
+
+}
+</code></pre>
+
+<p>在Client客户端类进行测试，其修改后代码如下。 </p>
+<pre><code>import java.util.ArrayList;
+import java.util.List;
+
+public class Client {
+
+    public static void main(String[] args) {
+    List&lt;String&gt; intrinsicStates = new ArrayList&lt;String&gt;();
+        intrinsicStates.add(&quot;木须肉&quot;);
+        intrinsicStates.add(&quot;地三鲜&quot;);
+        intrinsicStates.add(&quot;孜然牛肉&quot;);
+
+        FlyweightFactory flyFactory =FlyweightFactory.getFlyweightFactory();
+
+        UnsharedConcreteFlyweight unsharedFlyweight1 = flyFactory.getUnsharedFlyweight(intrinsicStates);
+        UnsharedConcreteFlyweight unsharedFlyweight2 = flyFactory.getUnsharedFlyweight(intrinsicStates);
+
+        System.out.println(&quot;复合享元对象是否可以共享：&quot; + (unsharedFlyweight1 == unsharedFlyweight2));
+
+        unsharedFlyweight1.operation(&quot;一号桌&quot;);
+        unsharedFlyweight2.operation(&quot;五号桌&quot;);
+
+        //开始给一号桌上菜了
+        unsharedFlyweight1.getFlyweight(&quot;木须肉&quot;);
+        unsharedFlyweight1.getFlyweight(&quot;地三鲜&quot;);
+        unsharedFlyweight1.getFlyweight(&quot;孜然牛肉&quot;);
+        unsharedFlyweight1.getFlyweight(&quot;霸王餐&quot;);
+
+        System.out.println();
+
+        String intrinsicState =&quot;木须肉&quot;;
+        Flyweight flyweight1 = unsharedFlyweight1.getFlyweightMap().get(intrinsicState);
+        Flyweight flyweight2 = unsharedFlyweight2.getFlyweightMap().get(intrinsicState);
+        System.out.println(&quot;不同复合享元对象中的单纯享元对象是否可以共享：&quot; + (flyweight1 == flyweight2));
+    }
+
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>复合享元对象是否可以共享：false</p>
+<p>内蕴状态：木须肉<br />
+外蕴状态：一号桌<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;</p>
+<p>内蕴状态：地三鲜<br />
+外蕴状态：一号桌<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;</p>
+<p>内蕴状态：孜然牛肉<br />
+外蕴状态：一号桌<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;</p>
+<p>一号桌未点过:霸王餐<br />
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;</p>
+<p>不同复合享元对象中的单纯享元对象是否可以共享：true  </p>
+<h1>四、享元模式应用举例</h1>
+<p>场景：如下图所示，我们要做一个画图程序，为简单起见，假设该画图程序仅能画相同大小(直径20mm)的圆，但圆的颜色和位置可以不同。 </p>
+<p><div align=center><img src="./imgs/15.png" alt="静态代理模式结构示意图" title="静态代理模式结构示意图" />
+<div align=left></p>
+<p>如果想要使用享元模式来对该画图程序进行设计的话，首先要提取出享元对象(圆)的内蕴状态和外蕴状态。</p>
+<p>内蕴状态：圆的颜色。<br />
+外蕴状态：圆的位置。</p>
+<p>接下来，首先定义享元对象的抽象接口Circle，只含有一个draw()方法。</p>
+<pre><code>public interface Circle {
+
+    //画圆方法，需传入绘制的坐标x,y
+    void draw(int x,int y);
+}
+</code></pre>
+
+<p>然后再定义具体享元角色类ConcreteCircle。</p>
+<pre><code>import java.awt.Color;
+
+public class ConcreteCircle implements Circle {
+
+    //内蕴状态，圆的颜色
+    private Color color;
+
+    //构造函数中内蕴状态作为参数传入.
+    public ConcreteCircle(Color color){
+        super();
+        this.color=color;
+    }
+
+    // 外蕴状态作为参数传入绘图方法中，用以指定绘图位置.
+    @Override
+    public void draw(int x, int y) {
+        System.out.println(&quot;圆的颜色：&quot;+this.color+&quot;，坐标：X &quot;+x+&quot;,Y &quot;+y+&quot;。&quot;);
+    }
+
+}
+</code></pre>
+
+<p>再定义享元工厂类CircleFactory。</p>
+<pre><code>import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+
+public class CircleFactory {
+
+    private Map&lt;Color, Circle&gt; circleMap = new HashMap&lt;Color, Circle&gt;();
+
+    // 采用单例模式
+    private static CircleFactory circleFactory = new CircleFactory();
+
+    // 私有化享元工厂的构造方法
+    private CircleFactory() {
+    }
+
+    // 获取单例享元工厂的实例
+    public static CircleFactory getCircleFactory() {
+        return circleFactory;
+    }
+
+    public Circle getCircle(Color color) {
+        Circle circle = circleMap.get(color);
+        if (null == circle) {
+            circle = new ConcreteCircle(color);
+            circleMap.put(color, circle);
+        }
+        return circle;
+    }
+}
+</code></pre>
+
+<p>最后创建客户端Client类。</p>
+<pre><code>import java.awt.Color;
+
+public class Client {
+
+    public static void main(String[] args) {
+        /**
+         *  7个红色圆的坐标：(0,0) (0,25) (0,50) (0,75) (0,100) (25,100) (50,100)
+         * 11个蓝色圆的坐标：(100,0) (125,0) (150,0) (100,25) (100,50) (125,50) (150,50) (100,75) (100,100) (125,100) (150,100)
+         * 11个绿色圆的坐标：(200,0) (225,0) (250,0) (200,25) (200,50) (225,50) (250,50) (200,75) (200,100) (225,100) (250,100)
+         */
+        CircleFactory circleFactory=CircleFactory.getCircleFactory();
+
+        circleFactory.getCircle(Color.RED).draw(0, 0);
+        circleFactory.getCircle(Color.RED).draw(0, 25);
+        circleFactory.getCircle(Color.RED).draw(0, 50);
+        circleFactory.getCircle(Color.RED).draw(0, 75);
+        circleFactory.getCircle(Color.RED).draw(0, 100);
+        circleFactory.getCircle(Color.RED).draw(25, 100);
+        circleFactory.getCircle(Color.RED).draw(50, 100);
+        /**
+         * ...篇幅所限，蓝色圆和绿色圆的绘制代码此处省略...
+         */
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：</p>
+<p>圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 0,Y 0。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 0,Y 25。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 0,Y 50。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 0,Y 75。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 0,Y 100。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 25,Y 100。<br />
+圆的颜色：java.awt.Color[r=255,g=0,b=0]，坐标：X 50,Y 100。  </p>
+<h1>五、享元模式的适用性</h1>
+<p>Flyweight模式的有效性很大程度上取决于如何使用它以及在何处使用它。当出现下列情形时可以考虑使用Flyweight模式。</p>
+<ol>
+<li>一个应用程序使用了大量的对象。</li>
+<li>完全由于使用大量的对象，造成很大的存储开销。</li>
+<li>对象的大多数状态都可变为外部状态。</li>
+<li>如果删除对象的外部状态，那么可以用相对较少的共享对象取代很多组对象。</li>
+<li>应用程序不依赖对象标识。 </li>
+</ol>
+<h1>六、享元模式的特点</h1>
+<p><strong>享元模式的优点</strong>：减少对象数量，节省内存空间。</p>
+<p><strong>享元模式的缺点</strong>：</p>
+<ol>
+<li>享元模式使得系统更加复杂。为了使对象可以共享，需要将一些状态外部化，这使得程序的逻辑复杂化。</li>
+<li>享元模式将享元对象的状态外部化，而读取外部状态使得运行时间稍微变长。 </li>
+</ol>
+<p><code>享元模式的本质：分离与共享</code></p>
+<h1>七、总结</h1>
+<p>享元模式是一个考虑系统性能的设计模式，通过使用享元模式可以节约内存空间，提高系统的性能。享元模式的核心在于享元工厂类，享元工厂类的作用在于提供一个用于存储享元对象的享元池，用户需要对象时，首先从享元池中获取，如果享 元池中不存在，则创建一个新的享元对象返回给用户，并在享元池中保存该新增对象。 </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

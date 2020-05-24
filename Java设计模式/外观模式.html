@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>外观模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是外观模式</h1>
+<p>外观(Facade)模式是一种对象的结构型模式。为子系统中的一组接口提供一个一致的界面， Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。</p>
+<p>外观模式的本质：封装交互，简化调用</p>
+<p>设计意图：隐藏系统的复杂性，并向客户端提供一个可以访问系统的简单接口，以降低用户使用系统的复杂性。</p>
+<p>将一个系统划分成为若干个子系统有利于降低系统的复杂性。一个常见的设计目标是使子系统间的通信和相互依赖关系达到最小，达到该目标的途径之一就是引入一个外观(Facade)对象，它为子系统中较一般的设施提供了一个单一而简单的界面。</p>
+<p><div align=center><img src="./imgs/41.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>如图所示，引入外观角色之后，用户只需要直接与外观角色交互，用户与子系统之间的复杂关系由外观角色来实现，从而降低了系统的耦合度。 </p>
+<p>二、外观模式的结构
+外观模式没有一个一般化的类图表示，下图仅是一个功能示意。</p>
+<p><div align=center><img src="./imgs/42.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>外观模式涉及的角色及其职责如下：</p>
+<ul>
+<li>
+<p>外观(Facade)角色：定义整个系统对外的高层接口，通常需要调用内部多个子系统，从而把客户的请求代理给适当的子系统对象。</p>
+</li>
+<li>
+<p>子系统(Subsystem)角色：接受Facade对象的委派，真正实现功能，各个子系统对象之间可能有交互。但是请注意，Facade对象知道各个子系统，但是各个子系统不应该知道Facade对象。</p>
+</li>
+</ul>
+<p>此处为了示意，我们举一个简单的例子：汽车停车起步。</p>
+<p>汽车停车起步简化之后一般会包括以下几个操作步骤：发动汽车--&gt;踩下离合--&gt;挂档--&gt;松开离合--&gt;踩油门。当然这只是一个极简化了的步骤，真实的操作步骤可能比这还要复杂得多(还要配合刹车等操作)。然而，即便就是这经过简化的步骤，也经常会把许多学车的新手搞得手忙脚乱、连连憋熄火。</p>
+<p>这是一个典型的用户与一个系统（汽车）中的多个子系统（动力系统，离合器，变速器，油门）进行交互的情形，用户需要和所有的子系统交互，才能完成自己想要实现的功能，这其实是极不合理的，也极容易出错，毕竟并非所有的用户都是“老司机”，你说是吧！</p>
+<p>接下来我们使用外观模式来改造，实现以上的功能，类图结构如下：</p>
+<p><div align=center><img src="./imgs/43.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>下面是其实现的源代码：</p>
+<p>首先来看看各个子系统的定义，包括：动力系统、离合器、加速器、变速器四个子系统。</p>
+<pre><code>/**
+ * 动力系统
+ */
+public class PowerSystem {
+
+    /**
+     * 汽车发动
+     */
+    public void startUp() {
+        System.out.println(&quot;汽车发动。。。。&quot;);
+    }
+
+    /**
+     * 汽车熄火
+     */
+    public void closeDown() {
+        System.out.println(&quot;汽车熄火。。。。&quot;);
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>/**
+ * 离合器
+ */
+public class ClutchSystem {
+
+    /**
+     * 踩下离合
+     */
+    public void press() {
+        System.out.println(&quot;踩下离合。。。。&quot;);
+    }
+
+    /**
+     * 松开离合
+     */
+    public void release() {
+        System.out.println(&quot;松开离合。。。。&quot;);
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>/**
+ * 变速器
+ */
+public class TransmissionSystem {
+
+    /**
+     * 挂挡操作
+     * @param gear 所挂档位
+     */
+    public void shift(int gear) {
+        switch (gear) {
+        case -1:
+            System.out.println(&quot;挂倒档。。。。&quot;);
+            break;
+        case 0:
+            System.out.println(&quot;挂空档。。。。&quot;);
+            break;
+        case 1:
+            System.out.println(&quot;挂一档。。。。&quot;);
+            break;
+        case 2:
+            System.out.println(&quot;挂二档。。。。&quot;);
+            break;
+        case 3:
+            System.out.println(&quot;挂三档。。。。&quot;);
+            break;
+        case 4:
+            System.out.println(&quot;挂四档。。。。&quot;);
+            break;
+        case 5:
+            System.out.println(&quot;挂五档。。。。&quot;);
+            break;
+        }
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>/**
+ * 加速器，即油门
+ */
+public class AcceleratorSystem {
+
+    /**
+     * 踩下油门
+     */
+    public void press() {
+        System.out.println(&quot;踩下油门。。。。&quot;);
+    }
+
+    /**
+     * 松开油门
+     */
+    public void release() {
+        System.out.println(&quot;松开油门。。。。&quot;);
+    }
+}
+</code></pre>
+
+<p>接下来该看看外观的定义了，示例代码如下。  </p>
+<pre><code>/**
+ * 外观类
+ */
+public class Facade {
+
+    /**
+     * 示意方法，停车起步
+     */
+    public void parkingStart() {
+        // 创建需要转调的子系统对象实例
+        ClutchSystem clutchSystem = new ClutchSystem();
+        TransmissionSystem transmissionSystem = new TransmissionSystem();
+        AcceleratorSystem acceleratorSystem = new AcceleratorSystem();
+        // 转调子系统的功能
+        clutchSystem.press();
+        transmissionSystem.shift(1);
+        clutchSystem.release();
+        acceleratorSystem.press();
+        System.out.println(&quot;汽车开始动了。。。。&quot;);
+    }
+
+}
+</code></pre>
+
+<p>创建一个客户端类测试一下，示例代码如下。  </p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+
+        PowerSystem powerSystem = new PowerSystem();
+        // 发动汽车
+        // 此处作为示意，用户可以跳过外观，直接与子系统进行交互
+        powerSystem.startUp();
+        // 创建外观实例
+        Facade facade = new Facade();
+        // 停车起步
+        facade.parkingStart();
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>汽车发动。。。。<br />
+踩下离合。。。。<br />
+挂一档。。。。<br />
+松开离合。。。。<br />
+踩下油门。。。。<br />
+汽车开始动了。。。。  </p>
+<p>在以上代码示例中，为简明起见，只为Facade对象添加了一个“停车起步”的功能，事实上它还可以有更多其他的功能，Facade对象这个“停车起步”的功能其实就相当于是为已经发动了的汽车增加了一个“一键停车起步”的功能。</p>
+<p>并未把“发动汽车”这个步骤一并加入的Facade对象中，主要是为了作一个示意：根据实际需要，用户是可以越过Facade层，直接与子系统进行交互的。</p>
+<h1>三、外观模式的适用性</h1>
+<p>在以下条件下可以考虑使用外观模式：</p>
+<ul>
+<li>
+<p>当你要为一个复杂子系统提供一个简单接口时。子系统往往因为不断演化而变得越来越复杂。大多数模式使用时都会产生更多更小的类。这使得子系统更具可重用性，也更容易对子系统进行定制，但这也给那些不需要定制子系统的用户带来一些使用上的困难。facade可以提供一个简单的缺省视图，这一视图对大多数用户来说已经足够，而那些需要更多的可定制性的用户可以越过facade层。</p>
+</li>
+<li>
+<p>客户程序与抽象类的实现部分之间存在着很大的依赖性。引入facade将这个子系统与客户以及其他的子系统分离，可以提高子系统的独立性和可移植性。</p>
+</li>
+<li>
+<p>当你需要构建一个层次结构的子系统时，使用 facade模式定义子系统中每层的入口点。如果子系统之间是相互依赖的，你可以让它们仅通过facade进行通讯，从而简化了它们之间的依赖关系。</p>
+</li>
+</ul>
+<h1>四、外观模式和中介者模式</h1>
+<p>外观模式和中介者模式非常类似，但是却有本质的区别。</p>
+<p>中介者模式主要用来封装多个对象之间相互的交互，多用在系统内部的多个模块之间；而外观模式封装的是单向的交互，是从客户端访问系统的调用，没有从系统中来访问客户端的调用。</p>
+<p>在中介者模式的实现里面，是需要实现具体的交互功能的；而外观模式的实现里面，一般是组合调用或是转调内部实现的功能，通常外观模式本身并不实现这些功能。</p>
+<p>中介者模式的目的主要是松散多个同事之间的耦合，把这些耦合关系全部放到中介者中去实现；而外观模式的目的是简化客户端的调用，这点和中介者模式也不同。</p>
+<h1>五、外观模式的优缺点</h1>
+<p><strong>使用外观模式的优点</strong>：</p>
+<ul>
+<li>松散耦合</li>
+</ul>
+<p>外观模式松散了客户端与子系统的耦合关系，让子系统内部的模块能更容易扩展和维护。</p>
+<ul>
+<li>简单易用</li>
+</ul>
+<p>外观模式让子系统更加易用，客户端不再需要了解子系统内部的实现，也不需要跟众多子系统内部的模块进行交互，只需要跟外观交互就可以了，相当于外观类为外部客户端使用子系统提供了一站式服务。</p>
+<ul>
+<li>更好地划分访问的层次</li>
+</ul>
+<p>通过合理使用Facade，可以帮助我们更好地划分访问的层次。有些方法是对系统外的，有些方法是在系统内部使用的。把需要暴露给外部的功能集中到外观中，这样既方便客户端使用，也很好地隐藏了内部的细节。</p>
+<p><strong>使用外观模式的缺点</strong></p>
+<ul>
+<li>
+<p>不能很好地限制客户使用子系统类，如果对客户访问子系统类做太多的限制则减少了可变性和灵活性。</p>
+</li>
+<li>
+<p>在不引入抽象外观类的情况下，增加新的子系统可能需要修改外观类或客户端的源代码，违背了“开闭原则”。</p>
+</li>
+</ul>
+<h1>六、总结</h1>
+<p>Facade封装了子系统外部和子系统内部多个模块的交互过程，从而简化了外部的调用。通过外观，子系统为外部提供一些高层的接口，以方便它们的使用。</p>
+<p>外观模式很好地体现了“最少知识原则”。</p>
+<p>如果不使用外观模式，客户端通常需要和子系统内部的多个模块交互，也就是说客户端会和这些模块之间都有依赖关系，任意一个模块的变动都可能会引起客户端的变动。</p>
+<p>使用外观模式后，客户端只需要和外观类交互，即只和这个外观类有依赖关系，不需要再去关心子系统内部模块的变动情况了。</p>
+<p>这样一来，客户端不但简单，而且这个系统会更有弹性。当系统内部多个模块发生变化的时候，这个变化可以被这个外观类吸收和消化，并不需要影响到客户端，换句话说就是：可以在不影响客户端的情况下，实现系统内部的维护和扩展。 </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

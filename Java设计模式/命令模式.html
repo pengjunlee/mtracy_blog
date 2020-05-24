@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>命令模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是命令模式</h1>
+<p>命令(Command)模式又叫作动作(Action)模式或事务(Transaction)模式，是一种对象的行为模式。将一个请求封装为一个对象，从而使你可用不同的请求对客户进行参数化；对请求排队或记录请求日志，以及支持可撤消的操作。</p>
+<p>命令模式的本质：封装请求</p>
+<p>设计意图：命令模式通过将请求封装到一个命令(Command)对象中，实现了请求调用者和具体实现者之间的解耦。 </p>
+<h1>二、命令模式的适用性</h1>
+<p>在以下条件下可以考虑使用命令模式：</p>
+<ul>
+<li>如果需要抽象出需要执行的动作，并参数化这些对象，可以选用命令模式。将这些需要执行的动作抽象成为命令，然后实现命令的参数化配置。</li>
+<li>如果需要在不同的时刻指定、排列和执行请求，可以选用命令模式。将这些请求封装成为命令对象，然后实现将请求队列化。</li>
+<li>如果需要支持取消操作，可以选用命令模式，通过管理命令对象，能很容易地实现命令的恢复和重做功能。</li>
+<li>如果需要支持当系统崩溃时，能将系统的操作功能重新执行一遍，可以选用命令模式。将这些操作功能的请求封装成命令对象，然后实现日志命令，就可以在系统恢复以后，通过日志获取命令列表，从而重新执行一遍功能。</li>
+<li>在需要事务的系统中，可以选用命令模式。命令模式提供了对事务进行建模的方法。命令模式有一个别名就是Transaction。  </li>
+</ul>
+<h1>三、命令模式的结构</h1>
+<p><div align=center><img src="./imgs/36.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>命令模式涉及的角色及其职责如下：</p>
+<ul>
+<li>抽象命令(Command)角色：一般定义为接口，用来定义执行命令的接口。</li>
+<li>具体命令(ConcreteCommand)角色：通常会持有接收者对象，并调用接收者对象的相应功能来完成命令要执行的操作。</li>
+<li>接收者(Receiver)角色：真正执行命令的对象。任何类都可能成为接收者，只要它能够实现命令要求实现的相应功能。</li>
+<li>调用者(Invoker)角色：要求命令对象执行请求，通常会持有命令对象，可以持有很多的命令对象。这个是客户端真正触发命令并要求命令执行相应操作的地方，也就是说相当于使用命令对象的入口。</li>
+<li>客户端(Client)角色：创建具体的命令对象，并且设置命令对象的接收者。</li>
+</ul>
+<p>命令模式结构示意源代码如下：</p>
+<p>先来看看抽象命令接口的定义。示例代码如下：</p>
+<pre><code>/**
+ * 命令接口
+ */
+public interface Command {
+
+    /**
+     * 执行命令
+     */
+    public void execute();
+}
+</code></pre>
+
+<p>接下来看看具体命令是如何实现的。示例代码如下：</p>
+<pre><code>/**
+ * 具体的命令实现
+ */
+public class ConcreteCommand implements Command {
+
+    /**
+     * 持有相应的接收者对象
+     */
+    private Receiver receiver = null;
+
+    /**
+     * 构造方法，传入相应的接收者对象
+     * 
+     * @param receiver 相应的接收者对象
+     */
+    public ConcreteCommand(Receiver receiver) {
+        this.receiver = receiver;
+    }
+
+    /**
+     * 执行命令
+     */
+    @Override
+    public void execute() {
+        // 通常会转调接收者对象的相应方法，让接收者来真正执行功能
+        receiver.action();
+    }
+
+}
+</code></pre>
+
+<p>再来看看接收者的定义。示例代码如下： </p>
+<pre><code>/**
+ * 命令的接收者
+ */
+public class Receiver {
+
+    /**
+     * 示意方法，真正执行命令相应的操作
+     */
+    public void action() {
+        System.out.println(&quot;接收者开始行动。。。&quot;);
+    }
+}
+</code></pre>
+
+<p>下面该来看看调用者如何实现的了。示例代码如下：</p>
+<pre><code>/**
+ * 命令的调用者
+ */
+public class Invoker {
+
+    /**
+     * 持有命令对象
+     */
+    private Command command = null;
+
+    /**
+     * 设置调用者持有的命令对象
+     * 
+     * @param command 命令对象
+     */
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    /**
+     * 示意方法，调用命令执行请求
+     */
+    public void invoke() {
+        command.execute();
+    }
+}
+</code></pre>
+
+<p>再来看看客户端的实现。</p>
+<pre><code>public class Client {
+    public static void main(String[] args) {
+        // 创建接收者
+        Receiver receiver = new Receiver();
+        // 创建命令对象，设定它的接收者
+        Command command = new ConcreteCommand(receiver);
+        // 创建调用者，把命令对象设置进去
+        Invoker invoker = new Invoker();
+        invoker.setCommand(command);
+        // 调用者调用命令
+        invoker.invoke();
+    }
+}
+</code></pre>
+
+<h1>四、命令模式的优点</h1>
+<ul>
+<li>
+<p>更松散的耦合<br />
+命令模式使得发起命令的对象——客户端，和具体实现命令的对象——接收者对象完全解耦，也就是说发起命令的对象完全不知道具体实现对象是谁，也不知道如何实现。</p>
+</li>
+<li>
+<p>更动态的控制<br />
+命令模式把请求封装起来，可以动态地对它进行参数化、队列化和日志化等操作，从而使得系统更灵活。</p>
+</li>
+<li>
+<p>很自然的复合命令<br />
+命令模式中的命令对象能够很容易地组合成复合命令，如宏命令，从而使系统操作更简单，功能更强大。</p>
+</li>
+<li>
+<p>更好的扩展性<br />
+由于发起命令的对象和具体的实现完全解耦，因此扩展新的命令就很容易，只需要实现新的命令对象，然后在装配的时候，把具体的实现对象设置到命令对象中，然后就可以使用这个命令对象，已有的实现完全不用变化。 </p>
+</li>
+</ul>
+<h1>五、认识命令模式</h1>
+<ul>
+<li><strong>参数化配置</strong></li>
+</ul>
+<p>所谓命令模式的参数化配置，指的是：可以用不同的命令对象，去参数化配置客户的请求。即：对于Invoker的同一个请求，为其配置不同的Command对象，就会执行不同的功能。</p>
+<ul>
+<li><strong>可撤销的操作</strong></li>
+</ul>
+<p>可撤销操作的意思就是：放弃该操作，回到未执行该操作前的状态。<br />
+有两种基本的思路来实现可撤销的操作，一种是补偿式，又称反操作式，比如要撤销的操作是加的功能，那么可以用相反的操作即减的功能去实现，撤销加多少就减多少。<br />
+使用命令模式可以实现补偿式的可撤销操作，首先需要把操作过的命令记录下来，形成命令的历史列表，撤销的时候就从最后一个开始执行撤销。同样的方式，还可以实现恢复的功能。<br />
+另外一种实现可撤销操作的方式是存储恢复式，意思就是把操作前的状态记录下来，然后要撤销操作的时候就直接恢复回去就可以了（可以使用备忘录模式实现）。</p>
+<ul>
+<li><strong>宏命令</strong></li>
+</ul>
+<p>什么是宏命令呢？简单点说就是包含多个命令的命令，是一个命令的组合。以去饭店吃饭为例，一般的流程都是：选座位--&gt;点菜--&gt;上菜--&gt;享用美食--&gt;结账，如果将这几个步骤中涉及的命令打包一起执行的话，就可以看作是一个宏命令。</p>
+<ul>
+<li><strong>队列请求</strong></li>
+</ul>
+<p>所谓队列请求，就是对命令对象进行排队，组成命令队列，然后依次取出命令对象来执行。还是以去饭店吃饭为例，已经点菜的顾客可能有很多人，点的每一道菜都可以看成是一条命令（需要厨师去做菜，服务员上菜），这些被点的菜就构成了一个命令队列。厨师一般都会按照点菜的先后顺序去做菜，谁的菜先点，就先做谁的。</p>
+<ul>
+<li><strong>日志请求</strong></li>
+</ul>
+<p>所谓日志请求，就是把请求的历史纪录保存下来，一般是采用永久存储的方式。如果在运行请求的过程中，系统崩溃了，那么当系统再次运行时，就可以从保存的历史记录中获取日志请求，并重新执行命令。<br />
+日志请求的实现有两种方案：一种是直接使用Java中的序列化方法；另外一种就是在命令对象中添加上存储和装载的方法，其实就是让命令对象自己实现类似序列化的功能。  </p>
+<h1>六、总结</h1>
+<p>命令模式是对命令的封装。命令模式把发出命令的责任和执行命令的责任分割开，委派给不同的对象。  </p>
+<p>每一个命令都是一个操作：请求的一方发出请求要求执行一个操作；接收的一方收到请求，并执行操作。命令模式允许请求的一方和接收的一方独立开来，使得请求的一方不必知道接收请求的一方的接口，更不必知道请求是怎么被接收，以及操作是否被执行、何时被执行，以及是怎么被执行的。  </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

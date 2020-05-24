@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>模板方法模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是模板方法模式</h1>
+<p>模板方法(TemplateMethod)模式是一种对象的行为模式。定义一个操作中的算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
+<p>模版方法模式的本质：固定算法骨架  </p>
+<h1>二、模板方法模式的结构</h1>
+<p><div align=center><img src="./imgs/34.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>模板方法模式涉及的角色及其职责如下：</p>
+<ul>
+<li>抽象类(AbstractClass)角色：用来定义算法骨架(template method)和原语操作(primitive operation)，具体的子类通过重定义这些原语操作来实现一个算法的各个步骤。在这个类里面，还可以提供算法中通用的实现(general operation)。</li>
+<li>具体实现类(ConcreteClass)角色：用来实现算法骨架中的某些步骤，完成与实现类自身相关的某些功能。</li>
+</ul>
+<p>模板方法模式结构示意源代码如下：</p>
+<p>先看看抽象类的写法，示例代码如下。</p>
+<pre><code>public abstract class AbstractClass {
+
+    /**
+     * 模板方法
+     */
+    public void templateMethod() {
+        // 调用原语操作和通用操作
+        generalOperation();
+        primitiveOperationA();
+        primitiveOperationB();
+
+    }
+
+    // 原语操作A，算法中的必要步骤，父类无法确定如何真正实现，需要子类来实现
+    public abstract void primitiveOperationA();
+
+    // 原语操作B，算法中的必要步骤，父类无法确定如何真正实现，需要子类来实现
+    public abstract void primitiveOperationB();
+
+    protected void generalOperation() {
+        System.out.println(&quot;执行通用操作...&quot;);
+    }
+}
+</code></pre>
+
+<p>再来看看具体实现类写法，示例代码如下。</p>
+<pre><code>/**
+ * 具体实现类，实现原语操作，并可以添加与自身功能相关的其他操作
+ */
+public class ConcreteClass extends AbstractClass {
+
+    // 具体的实现
+    @Override
+    public void primitiveOperationA() {
+        System.out.println(&quot;执行原语操作A...&quot;);
+    }
+
+    // 具体的实现
+    @Override
+    public void primitiveOperationB() {
+        System.out.println(&quot;执行原语操作B...&quot;);
+    }
+
+}
+</code></pre>
+
+<p>接下来看看客户端的示例，示意代码如下。 </p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+        // 创建一个模板实例
+        AbstractClass abstractClass = new ConcreteClass();
+
+        // 执行实例的模板方法
+        abstractClass.templateMethod();
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>执行通用操作...<br />
+执行原语操作A...<br />
+执行原语操作B...  </p>
+<h1>三、模板方法模式相关知识点</h1>
+<p><strong>抽象类和接口</strong>：</p>
+<ul>
+<li>接口是一种特殊的抽象类，所有接口中的属性自动是常量，也就是public final static的，而所有接口中的方法必须是抽象的。</li>
+<li>抽象类，简单点说是用abstract修饰的类。这里要特别注意的是抽象类和抽象方法的关系，记住两句话：抽象类不一定包含抽象方法；有抽象方法的类一定是抽象类。</li>
+<li>抽象类和接口相比较，最大的特点就在于抽象类中是可以有具体的实现方法的，而接口中所有的方法都是没有具体的实现的。</li>
+<li>通常在“既要约束子类的行为，又要为子类提供公共功能”的时候使用抽象类。</li>
+</ul>
+<p><strong>变与不变</strong>：</p>
+<ul>
+<li>程序设计的一个很重要的思考点就是“变与不变”，也就是分析程序中哪些功能是可变的，哪些功能是不变的，然后把不变的部分抽象出来，进行公共的实现，把变化的部分分离出去，用接口来封装隔离，或者是用抽象类来约束子类行为。</li>
+<li>模板方法模式很好地体现了这一点。模板类实现的就是不变的方法和算法的骨架，而需要变化的地方，都通过抽象方法，把具体实现延迟到子类中了，而且还通过父类的定义来约束了子类的行为，从而使系统能有更好的复用性和扩展性。</li>
+</ul>
+<p><strong>好莱坞法则</strong>：</p>
+<ul>
+<li>什么是好莱坞法则呢？简单点说，就是“不要找我们， 我们会联系你”。</li>
+<li>模板方法模式很好地体现了这一点。作为父类的模板会在需要的时候，调用子类相应的方法，也就是由父类来找子类，而不是让子类来找父类。</li>
+<li>这其实也是一种反向的控制结构。按照通常的思路，是子类找父类才对，也就是应该子类来调用父类的方法，因为父类根本就不知道子类，而子类是知道父类的，但是在模板方法模式里面，是父类来找子类，所以是一种反向的控制结构。</li>
+</ul>
+<p><strong>“后期绑定”技术</strong>：</p>
+<ul>
+<li>在Java语言中，对于出现子类覆盖父类方法的情况，在编译时是看数据类型，运行时则看实际的对象类型（new谁就调用谁的方法）。</li>
+<li>在使用模板方法模式的时候，虽然用的数据类型是模板类型，但是在创建类实例的时候是创建的具体的子类的实例，在调用的时候，会被动态绑定到子类的方法上，从而实现反向控制。其实在写父类的时候，它调用的方法是父类自己的抽象方法，只是在运行的时候被动态绑定到了子类的方法上。 </li>
+</ul>
+<h1>四、模板方法模式的适用性</h1>
+<p>在面向对象系统的分析与设计过程中经常会遇到这样一种情况： 对于某一个业务逻辑（算法实现）在不同的对象中有不同的细节实现， 但是逻辑（算法）的框架（或通用的应用算法）是相同的。模板方法提供了这种情况的一个实现框架。</p>
+<p>模版方法模式是采用继承的方式实现这一点： 将逻辑（算法）框架放在抽象基类中， 并定义好细节的接口，子类中实现细节。</p>
+<p>策略模式解决的是和模板方法模式类似的问题， 但是策略模式是将逻辑（算法）封装到一个类中，并采取组合（委托）的方式解决这个问题。</p>
+<p>模板方法应用于下列情况：</p>
+<ul>
+<li>固定定义算法骨架，实现一个算法的不变的部分，并把可变的行为留给子类来实现。</li>
+<li>各子类中具有公共行为，应被提取出来，集中到一个公共父类中去实现，以避免代码重复，即“重分解以一般化”。</li>
+<li>控制子类扩展。模板方法模式只在特定点调用子类的方法，这样就只允许在这些点进行扩展。  </li>
+</ul>
+<h1>五、模板方法模式的优缺点</h1>
+<p><strong>使用模板方法模式的优点</strong>：</p>
+<ul>
+<li>模板方法模式是一种实现代码复用的很好的手段。通过把子类的公共功能提炼和抽取，把公共部分放到模板中去实现。</li>
+</ul>
+<p><strong>使用模板方法模式的缺点</strong>：</p>
+<ul>
+<li>模板方法模式最基本的功能就是通过模板的制定，把算法骨架完全固定下来。事实上模板和子类是非常耦合的，如果要对模板中的算法骨架进行变更，可能就会要求所有相关的子类进行相应的变化。所以抽象算法骨架的时候要特别小心，尽量确保是不会变化的部分才放到模板中。 </li>
+</ul>
+<h1>六、总结</h1>
+<p>模板方法模式主要是通过制定模板，把算法步骤固定下来，至于谁来实现，模板可以自己提供实现，也可以由子类去实现，还可以通过回调机制让其他类来实现。</p>
+<p>通过固定算法骨架来约束子类的行为，并在特定的扩展点来让子类进行功能扩展，从而让程序既有很好的复用性，又有较好的扩展性。 </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

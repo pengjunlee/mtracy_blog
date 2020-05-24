@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>访问者模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是访问者模式</h1>
+<p>访问者（Visitor）模式是一种对象的行为模式。在访问者模式里，每个访问者表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提下定义作用于这些元素的新操作。</p>
+<p>在面向对象的系统开发和设计过程中，经常遇到的一种情况就是需求变更，针对已经开发完成的系统，客户又会提出新的需求。因此，我们不得不去修改已有的设计，最常见就是解决方案就是给已经设计、实现好的类添加新的方法去实现客户新的需求，这样就陷入了设计变更的梦魇：不停地打补丁，其最大的问题就是设计根本就不可能封闭。</p>
+<p>访问者模式则为这种情况提供了一种解决方案：将更新（变更）封装到一个类中（访问操作），并由待更改类提供一个接收接口，则可达到效果。 </p>
+<h1>二、访问者模式的结构</h1>
+<p>  
+<div align=center><img src="./imgs/16.png" alt="访问者模式结构示意图" title="访问者模式结构示意图" />
+<div align=left></p>
+<p>访问者模式涉及的角色及其职责如下：</p>
+<ul>
+<li>抽象访问者(Visitor)角色：为该对象结构中具体元素角色声明一个访问操作接口，用来代表为对象结构添加的新功能，理论上可以代表任意的功能。</li>
+<li>具体访问者(ConcreteVisitor)角色：实现每个由抽象访问者角色（Visitor）声明的操作接口。</li>
+<li>抽象元素(Element)角色：定义一个accept()操作，它以一个访问者（Visitor）对象作为参数。</li>
+<li>具体元素(ConcreteElement)角色：实现由抽象元素(Element)角色提供的accept()操作。</li>
+<li>
+<p>对象结构(ObjectStructure)角色：这是使用访问者模式必备的角色。一般具备以下特征：</p>
+<ol>
+<li>能枚举它的元素。  
+</li>
+<li>可以提供一个高层的接口以允许该访问者访问它的元素。</li>
+<li>可以是一个复合（组合模式）或是一个集合，如一个列表或一个无序集合。</li>
+</ol>
+</li>
+</ul>
+<p>访问者模式结构示意源代码如下：</p>
+<p>（1）首先定义一个接口来代表要新加入的功能，把它称作访问者（Visitor），访问谁呢？当然是访问对象结构中的对象了。 </p>
+<pre><code>/** 
+ * 访问者接口 
+ */  
+public interface Visitor {  
+
+    /** 
+     * 访问ConcreteElementA，相当于为ConcreteElementA添加的新功能 
+     */  
+    public void visitConcreteElementA(ConcreteElementA elementA);  
+
+    /** 
+     * 访问ConcreteElementB，相当于为ConcreteElementB添加的新功能 
+     */  
+    public void visitConcreteElementB(ConcreteElementB elementB);  
+
+}  
+</code></pre>
+
+<p>（2）再看看访问者的具体实现(ConcreteVisitor)。</p>
+<pre><code>public class ConcreteVisitorA implements Visitor {  
+
+    @Override  
+    public void visitConcreteElementA(ConcreteElementA elementA) {  
+        /** 
+         * 把访问ConcreteElementA时，需要执行的功能在这里进行实现 可能需要访问元素已有的功能，比如：operationA() 
+         */  
+        System.out.println(&quot;ConcreteVisitorA 访问 ==&gt; ConcreteElementA 对象。&quot;);  
+
+    }  
+
+    @Override  
+    public void visitConcreteElementB(ConcreteElementB elementB) {  
+        /** 
+         * 把访问ConcreteElementB时，需要执行的功能在这里进行实现 可能需要访问元素已有的功能，比如：operationB() 
+         */  
+        System.out.println(&quot;ConcreteVisitorA 访问 ==&gt; ConcreteElementB 对象。&quot;);  
+
+    }  
+
+}  
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class ConcreteVisitorB implements Visitor {  
+
+    @Override  
+    public void visitConcreteElementA(ConcreteElementA elementA) {  
+        /** 
+         * 把访问ConcreteElementA时，需要执行的功能在这里进行实现 可能需要访问元素已有的功能，比如：operationA() 
+         */  
+        System.out.println(&quot;ConcreteVisitorB 访问 ==&gt; ConcreteElementA 对象。&quot;);  
+    }  
+
+    @Override  
+    public void visitConcreteElementB(ConcreteElementB elementB) {  
+        /** 
+         * 把访问ConcreteElementB时，需要执行的功能在这里进行实现 可能需要访问元素已有的功能，比如：operationB() 
+         */  
+        System.out.println(&quot;ConcreteVisitorB 访问 ==&gt; ConcreteElementB 对象。&quot;);  
+
+    }  
+
+}  
+</code></pre>
+
+<p>（3）抽象元素(Element)的定义。 </p>
+<pre><code>public abstract class Element {  
+
+    // 接受访问者的访问  
+    public abstract void accept(Visitor visitor);  
+
+}  
+</code></pre>
+
+<p>（4）再看看元素对象的具体实现(ConcreteElement)。 </p>
+<pre><code>public class ConcreteElementA extends Element {  
+
+    @Override  
+    public void accept(Visitor visitor) {  
+        // 回调访问者对象的相应方法  
+        visitor.visitConcreteElementA(this);  
+
+    }  
+
+    /** 
+     * 示例方法，表示元素已有的功能实现 
+     */  
+    public void operationA() {  
+        System.out.println(&quot;执行ConcreteElementA已有的operationA方法.&quot;);  
+
+    }  
+}  
+</code></pre>
+
+<p><br/>
+​
+	public class ConcreteElementB extends Element {  </p>
+<pre><code>    @Override  
+    public void accept(Visitor visitor) {  
+        // 回调访问者对象的相应方法  
+        visitor.visitConcreteElementB(this);  
+
+    }  
+
+    /** 
+     * 示例方法，表示元素已有的功能实现 
+     */  
+    public void operationB() {  
+        System.out.println(&quot;执行ConcreteElementB已有的operationB方法.&quot;);  
+
+    }  
+}  
+</code></pre>
+
+<p>​
+（5）对象结构(ObjectStructure)示例代码如下。</p>
+<pre><code>import java.util.ArrayList;  
+import java.util.Collection;  
+
+/** 
+ * 对象结构，通常在这里对元素对象进行遍历，让访问者能够访问到所有的元素 
+ */  
+public class ObjectStructure {  
+
+    /** 
+     * 示意,表示对象结构，可以是一个组合结构或者集合 
+     */  
+    private Collection&lt;Element&gt; col = new ArrayList&lt;Element&gt;();  
+
+    /** 
+     * 示意方法，提供给客户端操作的高层接口，让访问者对对象结构中的所有元素进行访问 
+     */  
+    public void handleRequest(Visitor visitor) {  
+        // 循环对象结构中的元素，进行访问  
+        for (Element element : col) {  
+            element.accept(visitor);  
+        }  
+    }  
+
+    /** 
+     * 示意方法，组建对象结构，向对象结构中添加元素 
+     */  
+    public void addElement(Element element) {  
+        this.col.add(element);  
+    }  
+}  
+</code></pre>
+
+<p>（6）最后在客户端测试一下，示例代码如下。 </p>
+<pre><code>public class Client {  
+    public static void main(String[] args) {  
+
+        // 创建对象结构  
+        ObjectStructure os = new ObjectStructure();  
+
+        // 为对象结构中添加元素对象  
+        os.addElement(new ConcreteElementA());  
+        os.addElement(new ConcreteElementB());  
+
+        // 创建访问者  
+        Visitor visitor = new ConcreteVisitorA();  
+
+        // 调用对象结构的业务处理方法  
+        os.handleRequest(visitor);  
+    }  
+
+}  
+</code></pre>
+
+<p> 运行程序打印结果如下：</p>
+<p>ConcreteVisitorA 访问 ==&gt; ConcreteElementA 对象。 <br />
+ConcreteVisitorA 访问 ==&gt; ConcreteElementB 对象。   </p>
+<p>访问者模式中对象结构存储了不同类型的元素对象，以供不同访问者访问。访问者模式包括两个层次结构，一个是访问者层次结构，提供了抽象访问者和具体访问者，一个是元素层次结构，提供了抽象元素和具体元素。相同的访问者可以以不同的方式访问不同的元素，相同的元素可以接受不同访问者以不同访问方式访问。在访问者模式中，增加新的访问者无须修改原有系统，系统具有较好的可扩展性。 </p>
+<p>访问者模式在不破坏类的前提下，为类提供增加新的新操作，其实现的关键是双分派（ Double-Dispatch）的技术。 在访问者模式中 accept()操作是一个双分派的操作。具体调用哪一个具体的accept()操作，有两个决定因素： </p>
+<ol>
+<li>Element的类型。因为 accept()是多态的操作，需要具体的 Element 类型的子类才可以决定到底调用哪一个accept()实现；</li>
+<li>Visitor的类型。accept()操作有一个参数（ Visitor visitor），要决定了实际传进来的 Visitor 的实际类别才可以决定具体是调用哪个 VisitConcrete（）实现。</li>
+</ol>
+<h1>三、访问者模式的适用性</h1>
+<p>从访问者模式的定义可以看出对象结构是使用访问者模式的先决条件，在以下情况可以考虑使用访问者模式：</p>
+<ol>
+<li>对象结构内包含多种类型的对象，我们希望对这些对象实施一些依赖于其具体类型的操作。</li>
+<li>需要对一个对象结构中的对象进行很多不同的并且不相关的操作，而需要避免让这些操作“污染”这些对象的类，也不希望在增加新操作时修改这些类。</li>
+<li>对象结构中对象的类型很少改变，但经常需要在此对象结构上定义新的操作。</li>
+</ol>
+<h1>四、 场景举例</h1>
+<p>一个商场（SuperMarket），通常都会包括（当然还会包含一些其他的组成部分）：商店（Store）、监控室（MonitoringRoom）、卫生间（WaterCloset）。商场的访问者大致可以分为两大类：顾客（Customer）、商场工作人员（MarketStaff）。顾客可以逛商店、上卫生间，但却不能进入监控室；工作人员可以进入监控室、上卫生间，但却不能像顾客一样逛商店（除非他不想干了），也就是说对于商场的同一个地点，不同的访问者有不同的行为权限，而且访问者的种类很有可能需要根据时间的推移发生变化（没准哪天，工商局的人要来视察呢！此时就需要增加工商局人员的访问者了。）。</p>
+<p>使用访问者模式实现，其类图如下： </p>
+<p><div align=center><img src="./imgs/17.png" alt="访问者模式应用示意图" title="访问者模式应用示意图" />
+<div align=left></p>
+<p>Place相当于访问者模式中的Element。 </p>
+<pre><code>public abstract class Place {
+
+    // 接受访问者的访问
+    public abstract void accept(Visitor visitor);
+}
+</code></pre>
+
+<p>Place的具体实现类有三个，WaterCloset、Store和MonitoringRoom。  </p>
+<pre><code>public class WaterCloset extends Place {
+
+    @Override
+    public void accept(Visitor visitor) {
+        // 回调访问者对象的相应方法
+        visitor.visitWaterCloset(this);
+    }
+
+    public void washing() {
+        // 卫生间已有的方法
+        System.out.println(&quot;洗洗手。。。*/&quot;);
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class Store extends Place {
+
+    @Override
+    public void accept(Visitor visitor) {
+        // 回调访问者对象的相应方法
+        visitor.visitStore(this);
+    }
+
+    public void shopping() {
+        // 商店已有的方法
+        System.out.println(&quot;欢迎光临，祝您购物愉快。。。*/&quot;);
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class MonitoringRoom extends Place {
+
+    @Override
+    public void accept(Visitor visitor) {
+        // 回调访问者对象的相应方法
+        visitor.visitMonitoringRoom(this);
+    }
+
+    public void watching() {
+        // 监控室已有的方法
+        System.out.println(&quot;查看监控录像...*/&quot;);
+    }
+
+}
+</code></pre>
+
+<p>抽象访问者Visitor的代码如下。  </p>
+<pre><code>public interface Visitor {
+
+    // 进入卫生间
+    public void visitWaterCloset(WaterCloset wc);
+
+    // 进入监控室
+    public void visitMonitoringRoom(MonitoringRoom mr);
+
+    // 进入商店
+    public void visitStore(Store store);
+
+}
+</code></pre>
+
+<p>Visitor的具体实现类，MarketStaff和Customer。  </p>
+<pre><code>public class MarketStaff implements Visitor {
+
+    @Override
+    public void visitWaterCloset(WaterCloset wc) {
+        System.out.println(&quot;/*工作人员来到卫生间。。。&quot;);
+        wc.washing();
+        System.out.println();
+    }
+
+    @Override
+    public void visitMonitoringRoom(MonitoringRoom mr) {
+        System.out.println(&quot;/*工作人员来到监控室。。。&quot;);
+        mr.watching();
+        System.out.println();
+
+    }
+
+    @Override
+    public void visitStore(Store store) {
+        System.out.println(&quot;/*工作人员来到商店。。。&quot;);
+        System.out.println(&quot;现在是工作时间，请专心工作。。。*/&quot;);
+        System.out.println();
+
+    }
+
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class Customer implements Visitor {
+
+    @Override
+    public void visitWaterCloset(WaterCloset wc) {
+        System.out.println(&quot;/*顾客来到卫生间。。。&quot;);
+        wc.washing();
+        System.out.println();
+
+    }
+
+    @Override
+    public void visitMonitoringRoom(MonitoringRoom mr) {
+        System.out.println(&quot;/*顾客来到监控室。。。&quot;);
+        System.out.println(&quot;非工作人员禁止入内。。。*/&quot;);
+        System.out.println();
+
+    }
+
+    @Override
+    public void visitStore(Store store) {
+        System.out.println(&quot;/*顾客来到商店。。。&quot;);
+        store.shopping();
+        System.out.println();
+    }
+
+}
+</code></pre>
+
+<p>SuperMarket就是结构对象。  </p>
+<pre><code>import java.util.ArrayList;
+import java.util.Collection;
+
+public class SuperMarket {
+
+    // 示意,表示对象结构，可以是一个组合结构或者集合
+    private Collection&lt;Place&gt; col = new ArrayList&lt;Place&gt;();
+
+    public void handleRequest(Visitor visitor) {
+        // 循环对象结构中的元素，进行访问
+        for (Place place : col) {
+            place.accept(visitor);
+        }
+    }
+
+    // 示意方法，组建对象结构，向对象结构中添加元素
+    public void addPlace(Place place) {
+        this.col.add(place);
+    }
+}
+</code></pre>
+
+<p>Client中测试代码如下。  </p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+        SuperMarket superMarket = new SuperMarket();
+        superMarket.addPlace(new WaterCloset());
+        superMarket.addPlace(new Store());
+        superMarket.addPlace(new MonitoringRoom());
+
+        // 创建一个顾客访问者
+        Visitor customer = new Customer();
+
+        System.out.println(&quot;=====顾客来到商场=====&quot;);
+        superMarket.handleRequest(customer);
+        System.out.println(&quot;=====顾客离开商场=====&quot;);
+        System.out.println();
+        // 创建一个商场工作人员访问者
+        Visitor visitor = new MarketStaff();
+        System.out.println(&quot;=====工作人员来到商场=====&quot;);
+        superMarket.handleRequest(visitor);
+        System.out.println(&quot;=====工作人员离开商场=====&quot;);
+    }
+
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>=====顾客来到商场=====<br />
+/<em>顾客来到卫生间。。。<br />
+洗洗手。。。</em>/  </p>
+<p>/<em>顾客来到商店。。。<br />
+欢迎光临，祝您购物愉快。。。</em>/  </p>
+<p>/<em>顾客来到监控室。。。<br />
+非工作人员禁止入内。。。</em>/  </p>
+<p>=====顾客离开商场=====  </p>
+<p>=====工作人员来到商场=====<br />
+/<em>工作人员来到卫生间。。。<br />
+洗洗手。。。</em>/  </p>
+<p>/<em>工作人员来到商店。。。<br />
+现在是工作时间，请专心工作。。。</em>/  </p>
+<p>/<em>工作人员来到监控室。。。<br />
+查看监控录像...</em>/  </p>
+<p>=====工作人员离开商场=====  </p>
+<h1>五、访问者模式的特点</h1>
+<h2>访问者模式的优点</h2>
+<ul>
+<li>
+<p>好的扩展性：能够在不修改对象结构中的元素的情况下，为对象结构中的元素添加新的功能。 　　</p>
+</li>
+<li>
+<p>好的复用性：可以通过访问者来定义整个对象结构通用的功能，从而提高复用程度。 　　</p>
+</li>
+<li>
+<p>分离无关行为：可以通过访问者来分离无关的行为，把相关的行为封装在一起，构成一个访问者，这样每一个访问者的功能都比较单一。</p>
+</li>
+</ul>
+<h2>访问者模式的缺点</h2>
+<ul>
+<li>增加新的元素类很困难：在访问者类中，每一个元素类都有它对应的处理方法，也就是说，每增加一个元素类都需要修改访问者类（也包括访问者类的子类或者实现类），修改起来相当麻烦。 　　</li>
+<li>破坏封装：访问者模式通常需要对象结构开放内部数据给访问者和ObjectStructrue，这破坏了对象的封装性。 </li>
+</ul>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

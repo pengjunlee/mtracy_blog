@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>代理模式（动态）（一）</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是动态代理</h1>
+<p>在静态代理(Static Proxy)模式中，代理类都是真实存在的，由程序员提前创建好的java类，是静态的，每一个代理类在编译之后都会生成一个.class字节码文件，静态代理类所实现的接口和所代理的方法早在编译期都已被固定了。</p>
+<p>动态代理(Dynamic Proxy)则不同：动态代理使用字节码动态生成和加载技术，在系统运行时动态地生成和加载代理类。</p>
+<p>与静态代理相比，动态代理有以下优点：首先，无需再为每一个真实主题写一个形式上完全一样的代理类，假如抽象主题接口中的方法很多的话，为每一个接口方法写一个代理方法也很麻烦，同样地，如果后期抽象主题接口发生变动，则真实主题和代理类都要修改，不利于系统维护；其次，动态代理可以让系统根据实际需要来动态创建代理类，同一个代理类能够代理多个不同的真实主题类，并且可以代理多个不同的方法。</p>
+<h1>二、Java对动态代理的支持</h1>
+<p>从JDK 1.3版本开始，Java语言提供了对动态代理的支持，在Java中实现动态代理机制，需要用到 java.lang.reflect 包中的 InvocationHandler 接口和 Proxy 类,我们先来看看java的API帮助文档是怎么样对这两个类进行描述的：</p>
+<h2>InvocationHandler</h2>
+<pre><code>InvocationHandler is the interface implemented by the invocation handler of a proxy instance. 
+Each proxy instance has an associated invocation handler. When a method is invoked on a proxy instance, the 
+method invocation is encoded and dispatched to the invoke method of its invocation handler.
+</code></pre>
+
+<p>大致的意思是：</p>
+<pre><code>InvocationHandler 是代理实例的调用处理程序实现的接口。
+每个代理实例都具有一个与之关联的调用处理程序。对代理实例调用方法时，将对方法调用进行编码并将其指派到它的调用处理程
+序的 invoke() 方法。
+</code></pre>
+
+<p>invoke() 方法形式如下：  </p>
+<pre><code>Object invoke(Object proxy,Method method,Object[] args) throws Throwable
+</code></pre>
+
+<p>InvocationHandler 接口只包含invoke()这唯一一个方法，该方法用于处理对代理类实例的方法调用并返回相应的结果，当一个代理实例中的业务方法被调用时将自动调用该方法。invoke()方法包含三个参数，其中第一个参数proxy表示代理类的实例，第二个参数method表示需要代理的方法，第三个参数args表示代理方法的参数数组。 </p>
+<h2>Proxy</h2>
+<pre><code>Proxy provides static methods for creating dynamic proxy classes and instances, and it is also the
+superclass of all dynamic proxy classes created by those methods.
+</code></pre>
+
+<p>大致的意思是：</p>
+<p>Proxy 提供用于创建动态代理类和实例的静态方法，它还是由这些方法创建的所有动态代理类的超类。<br />
+Proxy提供给我们的静态方法有以下四个：  </p>
+<pre><code>//返回指定代理实例的调用处理程序。
+static InvocationHandler getInvocationHandler(Object proxy) 
+
+//返回代理类的 java.lang.Class 对象，并向其提供类加载器和接口数组。
+static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;[] interfaces) 
+
+//当且仅当指定的类通过 getProxyClass 方法或 newProxyInstance 方法动态生成为代理类时，返回 true。
+static boolean  isProxyClass(Class&lt;?&gt; cl) 
+
+//返回一个指定接口的代理类实例，该接口可以将方法调用指派到指定的调用处理程序。
+//方法中的 ClassLoader loader 参数用来指定动态代理类的类加载器，Class&lt;?&gt;[] interfaces用来指定动态代理类要实现的接口。
+//InvocationHandler h 用来指定与即将生成的动态代理对象相关联的调用处理程序
+static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) 
+</code></pre>
+
+<p>下面我们以为数据库增加日志记录功能（为简单起见，我们仅记录下所有操作的执行时间及操作执行的结果）为例来看一看如何使用这两个类实现动态代理：</p>
+<p>为了使演示更清晰，在此先定义两个简单类，一个User类和一个Document类分别表示数据库中的用户记录和文档记录，其代码如下。  </p>
+<pre><code>public class User {
+    // 用户在数据库中的ID
+    private Long id;
+    // 用户的姓名
+    private String name;
+    public User(Long id, String name) {
+        super();
+        this.id = id;
+        this.name = name;
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class Document {
+    // 文档在数据库中的ID
+    private Long id;
+    // 文档的标题
+    private String title;
+    public Document(Long id, String title) {
+        super();
+        this.id = id;
+        this.title = title;
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+}
+</code></pre>
+
+<p>另外还需定义一个DataBase类用来扮演数据库的功能，在此为简单起见，将数据库中的用户记录和文档记录分别存储在一个Map中，代码如下。 </p>
+<pre><code>import java.util.HashMap;
+import java.util.Map;
+public class DataBase {
+    private static Map&lt;Long, User&gt; userMap = null;
+    private static Map&lt;Long, Document&gt; documentMap = null;
+    // 用来记录当前登陆用户信息
+    private static User currentUser = null;
+
+    private DataBase() {
+        // 数据初始化，为数据库中增加几条用户记录。。。
+        userMap = new HashMap&lt;Long, User&gt;();
+        userMap.put(20160708L, new User(20160708L, &quot;燕凌娇&quot;));
+        userMap.put(20160709L, new User(20160709L, &quot;姬如雪&quot;));
+        userMap.put(20160710L, new User(20160710L, &quot;百里登风&quot;));
+        // 数据初始化，为数据库中增加几条文档记录。。。
+        documentMap = new HashMap&lt;Long, Document&gt;();
+        documentMap.put(30160708L, new Document(30160708L, &quot;C++常用算法手册&quot;));
+        documentMap.put(30160709L, new Document(30160709L, &quot;深入理解Android内核设计思想&quot;));
+        documentMap.put(30160710L, new Document(30160710L, &quot;Java从入门到放弃&quot;));
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        DataBase.currentUser = currentUser;
+    }
+
+    public Map&lt;Long, User&gt; getUserMap() {
+        return userMap;
+    }
+
+    public Map&lt;Long, Document&gt; getDocumentMap() {
+        return documentMap;
+    }
+
+    public static DataBase getDataBaseInstance() {
+        return DataBaseHolder.dataBase;
+    }
+
+    public static class DataBaseHolder {
+        private static DataBase dataBase = new DataBase();
+    }
+}
+</code></pre>
+
+<p>数据库布置完成了，接下来开始写动态代理相关代码了，为了与静态代理进行比较，在此我们来创建两个接口（抽象主题角色）。 </p>
+<pre><code>public interface UserDao {
+    // 登陆数据库，为了演示方便将字符串作为执行结果返回
+    String login(Long id);
+    // 退出数据库，为了演示方便将字符串作为执行结果返回
+    String logout();
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public interface DocumentDao {
+    // 新增文档，为了演示方便将字符串作为执行结果返回
+    String add(Document document);
+    // 删除文档，为了演示方便将字符串作为执行结果返回
+    String delete(Document document);
+}
+</code></pre>
+
+<p>接下来是两个真实主题角色，ImpUserDao 类和ImpDocumentDao类，为了使示例结果清晰，此处将接口的执行结果直接以字符串形式返回。</p>
+<pre><code>public class ImpUserDao implements UserDao {
+    @Override
+    public String login(Long id) {
+        User user = DataBase.getDataBaseInstance().getUserMap().get(id);
+        if (null != user) {
+            // 数据库有此用户的信息，则允许登陆...
+            DataBase.getDataBaseInstance().setCurrentUser(user);
+            return &quot;用户[&quot; + user.getName() + &quot;]登陆成功...&quot;;
+        } else {
+            // 数据库没有此用户信息，则不让登陆...
+            return &quot;登陆失败，ID为\&quot;&quot; + id + &quot;\&quot;的用户不存在！&quot;;
+        }
+    }
+
+    @Override
+    public String logout() {
+        User user = DataBase.getDataBaseInstance().getCurrentUser();
+        if (null != user) {
+            // 若当前有用户登陆，则退出成功...
+            DataBase.getDataBaseInstance().setCurrentUser(null);
+            return &quot;用户[&quot; + user.getName() + &quot;]退出登陆成功...&quot;;
+        } else {
+            // 若当前无用户登陆，则退出失败...
+            return &quot;退出登陆失败，当前无登陆用户！&quot;;
+        }
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class ImpDocumentDao implements DocumentDao {
+    @Override
+    public String add(Document document) {
+        User user = DataBase.getDataBaseInstance().getCurrentUser();
+        if (null == user) {
+            // 若当前用户未登陆，则新增文档失败...
+            return &quot;保存失败，未获取到登陆信息！&quot;;
+        } else {
+            Document dbDocument = DataBase.getDataBaseInstance().getDocumentMap().get(document.getId());
+            if (null != dbDocument) {
+                // 若数据库中已经存在该ID的文档，则新增文档失败...
+                return &quot;添加文档《&quot; + document.getTitle() + &quot;》失败，文档已存在！&quot;;
+            } else {
+                // 若该ID的文档在数据库不存在，则新增文档成功...
+                DataBase.getDataBaseInstance().getDocumentMap().put(document.getId(), document);
+                return &quot;添加文档《&quot; + document.getTitle() + &quot;》成功...&quot;;
+            }
+        }
+    }
+
+    @Override
+    public String delete(Document document) {
+        User user = DataBase.getDataBaseInstance().getCurrentUser();
+        if (null == user) {
+            // 若当前用户未登陆，则新增文档失败...
+            return &quot;保存失败，未获取到登陆信息！&quot;;
+        } else {
+            Document dbDocument = DataBase.getDataBaseInstance().getDocumentMap().get(document.getId());
+            if (null == dbDocument) {
+                // 若数据库中该文档不存在，则删除文档失败...
+                return &quot;删除文档《&quot; + document.getTitle() + &quot;》失败，文档不存在！&quot;;
+            } else {
+                // 若数据库中该文档存在，则删除文档成功...
+                DataBase.getDataBaseInstance().getDocumentMap().remove(document.getId());
+                return &quot;删除文档《&quot; + document.getTitle() + &quot;》成功...&quot;;
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>最后，我们就要定义动态代理类了，前面说过，每一个动态代理类都必须要实现 InvocationHandler 这个接口，因此我们这个动态代理类也不例外。 </p>
+<pre><code>import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+public class DataBaseLogHandler implements InvocationHandler {
+    private Object object;
+    private Calendar calendar;
+
+    public DataBaseLogHandler(Object object) {
+        super();
+        this.object = object;
+    }
+
+    // invoke()方法用于处理对代理类实例的方法调用并返回相应的结果
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        before(method);
+        // 继续转发请求给内部真实主题角色
+        Object result = method.invoke(object, args);
+        after(result);
+        if (method.getName().equalsIgnoreCase(&quot;logout&quot;)) {
+            System.out.println(&quot;$$$$$$$$$$$$$$$$$$$$$$$$&quot;);
+            System.out.println(&quot;&quot;);
+        }
+        return result;
+    }
+
+    public void before(Method method) {
+        calendar = new GregorianCalendar();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int date = calendar.get(Calendar.DATE);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String time = hour + &quot;时&quot; + minute + &quot;分&quot; + second + &quot;秒&quot;;
+        System.out.println(&quot;北京时间：&quot; + year + &quot;年&quot; + month + &quot;月&quot; + date + &quot;日&quot; + time + &quot;,执行方法\&quot;&quot; + method.getName() + &quot;\&quot;&quot;);
+    }
+
+    public void after(Object object) {
+        System.out.println(&quot;执行结果:&quot; + object);
+    }
+}
+</code></pre>
+
+<p>至此，动态代理所需要的类就算创建完成了，接下来创建一个Client充当客户端来测试一下。</p>
+<pre><code>import java.lang.reflect.Proxy;
+
+public class MainClass {
+    public static void main(String[] args) {
+        // 此处来创建了两个动态代理类对象...
+        UserDao userDao = new ImpUserDao();
+        DataBaseLogHandler userHandler = new DataBaseLogHandler(userDao);
+        DocumentDao doucumentDao = new ImpDocumentDao();
+        DataBaseLogHandler documentHandler = new DataBaseLogHandler(doucumentDao);
+        UserDao userProxy = (UserDao) Proxy.newProxyInstance(UserDao.class.getClassLoader(),
+                new Class[] { UserDao.class }, userHandler);
+        DocumentDao documentProxy = (DocumentDao) Proxy.newProxyInstance(DocumentDao.class.getClassLoader(),
+                new Class[] { DocumentDao.class }, documentHandler);
+        // 先输入一个不存在的用户Id登陆试试...
+        userProxy.login(20160718L);
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        userProxy.logout();
+        // 再用一个真实用户Id登陆试试...
+        userProxy.login(20160708L);
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        userProxy.logout();
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下： </p>
+<p>北京时间：2016年6月11日19时33分46秒,执行方法&quot;login&quot;<br />
+执行结果:登陆失败，ID为&quot;20160718&quot;的用户不存在！<br />
+北京时间：2016年6月11日19时33分46秒,执行方法&quot;add&quot;<br />
+执行结果:保存失败，未获取到登陆信息！<br />
+北京时间：2016年6月11日19时33分46秒,执行方法&quot;logout&quot;<br />
+执行结果:退出登陆失败，当前无登陆用户！<br />
+$$$$$$$$$$$$$$$$$$$$$$$$</p>
+<p>北京时间：2016年6月11日19时33分46秒,执行方法&quot;login&quot;<br />
+执行结果:用户[燕凌娇]登陆成功...<br />
+北京时间：2016年6月11日19时33分46秒,执行方法&quot;add&quot;<br />
+执行结果:添加文档《转角遇见幸福》成功...<br />
+北京时间：2016年6月11日19时33分46秒,执行方法&quot;add&quot;<br />
+执行结果:添加文档《转角遇见幸福》失败，文档已存在！<br />
+北京时间：2016年6月11日19时33分46秒,执行方法&quot;logout&quot;<br />
+执行结果:用户[燕凌娇]退出登陆成功...<br />
+$$$$$$$$$$$$$$$$$$$$$$$$ </p>
+<p>从以上程序的最终运行结果可以看出：通过使用JDK自带的动态代理，我们同时实现了对ImpUserDao和ImpDocumentDao两个真实主题类的统一代理和集中控制。至于该动态代理类是如何被创建的？将在下一篇文章详细讨论，接下来我们先看看如何使用CGLIB实现动态代理。  </p>
+<h1>三、使用CGLIB实现动态代理</h1>
+<p>生成动态代理类的方法很多，如上例中JDK自带的动态代理、CGLIB、Javassist 或者 ASM 库。JDK 的动态代理使用简单，它内置在 JDK 中，因此不需要引入第三方 Jar 包，但相对功能比较弱。CGLIB 和 Javassist 都是高级的字节码生成库，总体性能比 JDK 自带的动态代理好，而且功能十分强大。ASM 是低级的字节码生成工具，使用 ASM 已经近乎于在使用 Java bytecode 编程，对开发人员要求最高，当然，也是性能最好的一种动态代理生成工具。但 ASM 的使用很繁琐，而且性能也没有数量级的提升，与 CGLIB 等高级字节码生成工具相比，ASM 程序的维护性较差，如果不是在对性能有苛刻要求的场合，还是推荐 CGLIB 或者 Javassist。</p>
+<p>接下来我们继续用上面的例子来体验一下如何使用CGLIB实现动态代理。</p>
+<p>首先，使用CGLIB来实现动态代理需引入“asm.jar”(CGLIB的底层是使用ASM实现的)和“cglib.jar”两个第三方jar包,引入两个jar包时需注意其版本，若版本有冲突会出现以下异常：<font color='red'> Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: org.objectweb.asm.ClassWriter.<init>(I)V </font></p>
+<p>接下来开始写代码，延用上例中的：User类、Document类、DataBase类、两个抽象主题接口UserDao和DocumentDao、两个真实主题角色类ImpUserDao和ImpDocumentDao，这几个类无需做任何修改，此处不再重复贴出。</p>
+<p>去掉上例中的 DataBaseLogHandler 类，新增一个 CglibProxy 类，该类需实现CGLIB的 MethodInterceptor(方法拦截) 接口。 </p>
+<pre><code>import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
+public class CglibProxy implements MethodInterceptor {
+    private Calendar calendar;
+
+    /**
+     * 创建动态代理类对象
+     *
+     * @param clazz
+     *            需要创建子类代理的父类的类型
+     * 
+     * @return
+     */
+    public Object getProxyInstance(Class&lt;?&gt; clazz) {
+        Enhancer enhancer = new Enhancer();
+        // 设置要创建的动态代理类的父类
+        enhancer.setSuperclass(clazz);
+        // 设置回调的对象，此句会导致调用动态代理类对象的方法会被指派到CglibProxy对象的intercept()方法
+        enhancer.setCallback(this);
+        // 通过字节码技术动态创建动态代理类实例
+        return enhancer.create();
+    }
+
+    @Override
+    // 回调方法
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+        before(method);
+        // 通过动态子类代理实例调用父类的方法
+        Object result = proxy.invokeSuper(obj, args);
+        after(result);
+        if (method.getName().equalsIgnoreCase(&quot;logout&quot;)) {
+            System.out.println(&quot;**********************************&quot;);
+            System.out.println(&quot;&quot;);
+        }
+        return result;
+    }
+
+    public void before(Method method) {
+        calendar = new GregorianCalendar();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int date = calendar.get(Calendar.DATE);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String time = hour + &quot;时&quot; + minute + &quot;分&quot; + second + &quot;秒&quot;;
+        System.out
+                .println(&quot;北京时间：&quot; + year + &quot;年&quot; + month + &quot;月&quot; + date + &quot;日&quot; + time + &quot;,执行方法\&quot;&quot; + method.getName() + &quot;\&quot;&quot;);
+    }
+
+    public void after(Object object) {
+        System.out.println(&quot;执行结果:&quot; + object);
+    }
+}
+</code></pre>
+
+<p>对客户端进行相应修改，如下。 </p>
+<pre><code>public class MainClass {
+    public static void main(String[] args) {
+        // 创建一个CglibProxy代理类对象，用来创建子类代理实例
+        CglibProxy cglib = new CglibProxy();
+        // 为ImpUserDao类添加一个动态代理类对象，即子类代理对象
+        UserDao userProxy = (UserDao) cglib.getProxyInstance(ImpUserDao.class);
+        // 为ImpDocumentDao类添加一个动态代理类对象，即子类代理对象
+        DocumentDao documentProxy = (DocumentDao) cglib.getProxyInstance(ImpDocumentDao.class);
+        // 先输入一个不存在的用户Id登陆试试...
+        userProxy.login(20160718L);
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        userProxy.logout();
+        // 再用一个真实用户Id登陆试试...
+        userProxy.login(20160708L);
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        documentProxy.add(new Document(30160711L, &quot;转角遇见幸福&quot;));
+        userProxy.logout();
+    }
+}
+</code></pre>
+
+<p>运行程序结果打印如下，与之前使用JDK自带动态代理程序运行结果完全相同： </p>
+<p>北京时间：2016年6月12日20时22分35秒,执行方法&quot;login&quot;<br />
+执行结果:登陆失败，ID为&quot;20160718&quot;的用户不存在！<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;add&quot;<br />
+执行结果:保存失败，未获取到登陆信息！<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;logout&quot;<br />
+执行结果:退出登陆失败，当前无登陆用户！<br />
+$$$$$$$$$$$$$$$$$$$$$$$$<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;login&quot;<br />
+执行结果:用户[燕凌娇]登陆成功...<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;add&quot;<br />
+执行结果:添加文档《转角遇见幸福》成功...<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;add&quot;<br />
+执行结果:添加文档《转角遇见幸福》失败，文档已存在！<br />
+北京时间：2016年6月12日20时22分35秒,执行方法&quot;logout&quot;<br />
+执行结果:用户[燕凌娇]退出登陆成功...<br />
+$$$$$$$$$$$$$$$$$$$$$$$$  </p>
+<blockquote>
+<p>PS:CGLib创建的动态代理对象性能比JDK创建的动态代理对象的性能高不少，但是CGLib在创建代理对象时所花费的时间却比JDK多得多，所以对于单例的对象，因为无需频繁创建对象，用CGLib合适，反之，使用JDK方式要更为合适一些。同时，由于CGLib采用动态创建子类的方法来对被代理的父类的功能进行增强和代理，所以，无法对被声明为final的类或方法进行代理。  </p>
+</blockquote>
+<h1>四、动态代理模式的特点</h1>
+<p>动态代理类使用字节码动态生成加载技术，在运行时生成并加载代理类。与静态代理相比，<strong>动态代理具有以下优点：</strong></p>
+<ul>
+<li>无需单独为每一个接口添加一个代理类，使用动态代理可以一次性为多个接口实现代理。</li>
+<li>无需逐个为接口中的所有方法添加实现，使用动态代理可以一次性为多个接口中的所有方法实现代理，在接口方法数量比较多的时候，可以避免出现大量的重复代码。</li>
+</ul>
+<p><strong>动态代理的缺点：</strong>  </p>
+<p>目前，JDK中提供的动态代理只能对接口实现代理，无法代理未实现接口的类。如果需要动态代理未实现接口的类，必须借助第三方工具，如：CGLib(Code Generation Library)等。</p>
+<h1>参考文章</h1>
+<p><a href="https://www.cnblogs.com/xiaoluo501395377/p/3383130.html" title="java的动态代理机制详解">https://www.cnblogs.com/xiaoluo501395377/p/3383130.html</a></p>
+<p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-proxy-pattern/" title="代理模式原理及实例讲解">https://www.ibm.com/developerworks/cn/java/j-lo-proxy-pattern/</a></p>
+<p><a href="http://www.lxway.com/4445954962.htm" title="代理模式详解包含原理详解">http://www.lxway.com/4445954962.htm</a></p>
+<p><a href="https://blog.csdn.net/lovelion/article/details/8116704" title="Java动态代理的实现">https://blog.csdn.net/lovelion/article/details/8116704</a></p>
+<p><a href="https://blog.csdn.net/hejingyuan6/article/details/36203505" title="JAVA学习篇--静态代理VS动态代理">https://blog.csdn.net/hejingyuan6/article/details/36203505</a></p>
+<p><a href="https://blog.csdn.net/rokii/article/details/4046098" title="深入理解Java Proxy机制">https://blog.csdn.net/rokii/article/details/4046098</a></p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

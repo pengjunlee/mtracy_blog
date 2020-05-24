@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>观察者模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是观察者模式</h1>
+<p> 观察者(Observer)模式是行为模式之一，它的作用是当一个被观察对象的状态发生变化时，能够自动通知相关的观察者对象，自动更新观察者对象中被观察对象的状态。它提供给关联对象一种同步通信的手段，使某个对象与依赖它的其他对象之间保持状态同步。 </p>
+<h1>二、观察者模式的典型应用</h1>
+<p>观察者(Observer)模式多被应用于以下场景：</p>
+<ul>
+<li>侦听事件驱动程序设计中的外部事件</li>
+<li>侦听/监视某个对象的状态变化</li>
+<li>发布者/订阅者(publisher/subscriber)模型中，当一个外部事件（新的产品，消息的出现等等）被触发时，通知邮件列表中的订阅者 </li>
+</ul>
+<h1>三、观察者模式的结构</h1>
+<p><div align=center><img src="./imgs/5.png" alt="策略模式结构示意图" title="策略模式结构示意图" />
+<div align=left></p>
+<p>观察者模式中的角色及其职责如下：</p>
+<ul>
+<li>抽象被观察者（Subject）角色    被观察对象的抽象类，为所有具体被观察者角色提供了一个统一接口，主要包括添加、删除、通知观察者对象方法，其内包含一个用以储存所有观察者对象的容器（Collection），当被观察者的状态发生变化时，需要通知容器中所有观察者对象，并维护（添加，删除，通知）观察者对象列表。</li>
+<li>具体被观察者（ConcreteSubject）角色    被观察者的具体实现，包含一些基本的属性状态及其他操作，当具体被观察者的状态发生变化时，会给注册的所有观察者对象发送通知，以提示观察者对象们对其内被观察对象的状态进行更新。</li>
+<li>抽象观察者（Observer）角色    这是一个抽象角色，通常被定义为接口，为所有的具体观察者定义一个接口，当收到被观察对象状态发生变化的通知时更新自己。</li>
+<li>具体观察者（ConcreteObserver）角色    观察者的具体实现，得到通知后将对内部被观察对象的状态进行更新，并完成一些具体的业务逻辑处理。</li>
+</ul>
+<p>观察者模式结构示意源代码如下：</p>
+<p><strong>抽象被观察者（Subject）角色</strong></p>
+<pre><code>public abstract class Subject {
+
+    //用来保存注册过的观察者
+    private List&lt;Observer&gt; observers=new ArrayList&lt;Observer&gt;();
+    //注册一个观察者
+    public void registerObserver(Observer observer){
+        this.observers.add(observer);
+    }
+    //删除一个观察者
+    public void unregisterObserver(Observer observer){
+        this.observers.remove(observer);
+    }
+    //通知所有观察者进行状态更新
+    public void notifyObservers(Subject subject){
+        for(Observer o:observers){
+            o.update(subject);
+        }
+    }
+}
+</code></pre>
+
+<p><strong>具体被观察者（ConcreteSubject）角色</strong></p>
+<pre><code>public class ConcreteSubject extends Subject {
+    //具体被观察者类可以具有自己的属性或状态
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String newState){
+
+        this.state = newState;
+        System.out.println(&quot;被观察者自身状态更新为：&quot; + this.state);
+
+        //状态发生改变，通知所有观察者
+        this.notifyObservers(this);
+    }
+
+}
+</code></pre>
+
+<p><strong>抽象观察者（Observer）角色</strong></p>
+<pre><code>public interface Observer{
+
+    //更新观察者的状态
+    public void update(Subject subject);
+
+}
+</code></pre>
+
+<p><strong>具体观察者（ConcreteObserver）角色</strong></p>
+<pre><code>public class ConcreteObserverA implements Observer {
+
+    private ConcreteSubject subject;
+    public ConcreteSubject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(ConcreteSubject subject) {
+        this.subject = subject;
+    }
+
+    @Override
+    public void update(Subject subject) {
+        this.subject=(ConcreteSubject)subject;
+        System.out.println(&quot;观察者A中被观察对象的状态更新为：&quot;+this.subject.getState());
+    }
+
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class ConcreteObserverB implements Observer {
+    private ConcreteSubject subject;
+    public ConcreteSubject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(ConcreteSubject subject) {
+        this.subject = subject;
+    }
+
+    @Override
+    public void update(Subject subject) {
+        this.subject=(ConcreteSubject)subject;
+        System.out.println(&quot;观察者B中被观察对象的状态更新为：&quot;+this.subject.getState());
+
+    }
+
+}
+</code></pre>
+
+<p>编写一个MainClass类来测试一番。</p>
+<pre><code>public class MainClass {
+
+    public static void main(String[] args) {
+
+        //创建被观察者对象
+        ConcreteSubject subject=new ConcreteSubject();
+
+        //创建观察者对象
+        ConcreteObserverA observerA=new ConcreteObserverA();
+        ConcreteObserverB observerB=new ConcreteObserverB();
+
+        //为被观察者对象注册观察者
+        subject.registerObserver(observerA);
+        subject.registerObserver(observerB);
+
+        subject.setState(&quot;复活中...&quot;);
+        System.out.println();
+        System.out.println(&quot;----------一千年以后...----------&quot;);
+        System.out.println();
+        subject.setState(&quot;疯狂杀戮中...&quot;);
+
+    }
+}
+</code></pre>
+
+<p>运行MainClass打印结果如下：</p>
+<p>被观察者自身状态更新为：复活中...<br />
+观察者A中被观察对象的状态更新为：复活中...<br />
+观察者B中被观察对象的状态更新为：复活中...<br />
+----------一千年以后...----------<br />
+被观察者自身状态更新为：疯狂杀戮中...<br />
+观察者A中被观察对象的状态更新为：疯狂杀戮中...<br />
+观察者B中被观察对象的状态更新为：疯狂杀戮中...  </p>
+<h1>四、Java对观察者模式的支持</h1>
+<p>在JAVA语言的java.util库里面有一个Observable类和一个Observer接口，通过两者配合使用可以实现观察者模式。</p>
+<p><strong>Observable类：</strong></p>
+<p>Observable中文意思“可以被观察的”，即Observable类是可以被观察的，想要实现观察者模式只需将你想要被观察的类继承自Observable类即可。</p>
+<p>一个 Observable对象可以有一个或多个观察者，观察者可以是实现了Observer接口的任意对象。一个Observable对象状态改变后,会调用notifyObservers()方法来通知观察者。</p>
+<p>以下是Observable类提供的一些常用方法：</p>
+<pre><code>public void addObserver(Observer o)    //向观察者集合中添加观察者
+public void deleteObserver(Observer o)    //从观察者集合中删除某一个观察者
+public void notifyObservers(Object arg)    //如果hasChanged方法指示对象已改变，则通知其所有观察者，并调用 clearChanged 方法来清除对象的已改变标记。此方法可不带参数，仅将Observable对象传递给update()方法，此时update方法中arg参数为Null。
+public void deleteObservers()    //清除观察者列表，使此对象不再有任何观察者
+protected void setChanged()    //标记Observable对象已经改变
+protected void clearChanged()    //清除Observable对象已改变标记
+public boolean hasChanged()    //测试对象是否改变
+public int countObservers()    //返回Observable对象的观察者数目
+</code></pre>
+
+<p><strong>Observer接口：</strong></p>
+<p>Observer接口只包含一个update()方法,该方法仅接受两个参数：继承自Observable类的被观察对象和传递给notifyObservers() 方法的参数。当Observable(被观察者)对象状态发生改变时将通过notifyObservers()方法向所有的Observer(观察者)发送更新通知，Observer(观察者)对象在收到通知后即调用此方法完成状态更新。 </p>
+<pre><code>void update(Observable o, Object arg)
+</code></pre>
+
+<p>接下来我们举个简单的例子来演示一下如何使用Observable类和Observer接口实现观察者模式，去年2015年是牛市，炒股的基本都发家了，在此我们以炒股为例。 </p>
+<p>在炒股这个例子中，不用我说，相信你也想的到：股票Stock就是我们的被观察者。</p>
+<pre><code>import java.util.Observable;
+public class Stock extends Observable{
+    //为股票的状态创建一个枚举类：RISE 涨,FALL 跌
+    public enum StockState{
+        RISE,FALL
+    }
+    //股票涨跌状态
+    private StockState state;
+    //股票的价格
+    private double price;
+    //股票的历史最低价格
+    private double LowestPrice;
+    //股票无参的构造方法
+    public Stock(){
+    }
+    //股票的带参数构造方法
+    public Stock(StockState state, double price, double lowestPrice) {
+        super();
+        this.state = state;
+        this.price = price;
+        LowestPrice = lowestPrice;
+    }
+    public StockState getState() {
+        return state;
+    }
+    private void setState(StockState state) {
+        this.state = state;
+    }
+    public double getPrice() {
+        return price;
+    }
+    public void setPrice(double price) {
+        if(price&lt;this.price){
+            setState(StockState.FALL);
+        }
+        else{
+            setState(StockState.RISE);
+        }
+        if(price&lt;this.LowestPrice){
+            setLowestPrice(price);
+        }
+        this.price = price;
+        //更新股票状态标记为已改变
+        this.setChanged();
+        //通知观察者
+        notifyObservers();
+    }
+    public double getLowestPrice() {
+        return LowestPrice;
+    }
+    private void setLowestPrice(double lowestPrice) {
+        LowestPrice = lowestPrice;
+    }
+}
+</code></pre>
+
+<p>我们这些只有韭菜命的股民自然就是观察者了。</p>
+<pre><code>import java.util.Observable;
+import java.util.Observer;
+import com.ibeifeng.news.Stock.StockState;
+public class Investor implements Observer {
+    public void update(Observable o, Object arg) {
+        Stock stock=(Stock)o;
+        if(stock.getPrice()==stock.getLowestPrice())
+        {
+            System.out.println(&quot;股票已经跌到历史最低了，我得赶紧抄底...&quot;);
+        }
+        else{
+            if(stock.getState().equals(StockState.RISE)){
+                System.out.println(&quot;股票在涨，目前价格：&quot;+stock.getPrice());
+            }
+            else{
+                System.out.println(&quot;股票在跌，目前价格：&quot;+stock.getPrice());
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>在客户端里面测试一下。</p>
+<pre><code>public class Client{
+    public static void main(String[] args) {
+        Stock stock=new Stock(StockState.FALL,14.7D,13.2D);
+        stock.addObserver(new Investor());
+        stock.setPrice(13.7);
+        stock.setPrice(12.6);
+        stock.setPrice(14.0);
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：</p>
+<p>股票在跌，目前价格：13.7<br />
+股票已经跌到历史最低了，我得赶紧抄底...<br />
+股票在涨，目前价格：14.0  </p>
+<h1>五、观察者模式的优点</h1>
+<p>观察者Observer模式解决了对象之间一对多的复杂依赖关系问题，大大地提高了程序的可维护性和可扩展性，也很好的符合了开放-封闭原则。 </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

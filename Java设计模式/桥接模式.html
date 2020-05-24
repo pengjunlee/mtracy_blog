@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>桥接模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是桥接模式</h1>
+<p>桥接(Bridge)模式是构造型的设计模式之一。桥接模式基于类的最小设计原则，通过使用封装，聚合以及继承等行为来让不同的类承担不同的责任。它的主要特点是把抽象(abstraction)与行为实现(implementation)分离开来，从而可以保持各部分的独立性以及应对它们的功能扩展。  </p>
+<h1>二、桥接模式的应用场景</h1>
+<p>《研磨设计模式》中给出这么一个场景：发送消息。</p>
+<p>从消息的重要程度上来看，消息可以分为普通消息、加急消息两种，两种消息的业务功能处理是不一样的，比如普通消息直接发送即可，而加急消息除了需在发送的消息上添加加急标识外，还需提供监控功能，以方便客户端了解加急消息的处理进度。</p>
+<p>从发送消息的方式上来看，消息又可以分为站内短消息和E-Mail两种。</p>
+<p>在不使用设计模式的情况下，我们一般会这么做：</p>
+<p>考虑到普通消息和加急消息都各有站内短消息和E-Mail两种发送方式，为了让外部能统一操作，因此把消息设计成接口，普通消息的两种发送方式分别作为该接口的两个实现，但加急消息除了有基本的发送消息的功能，还需要添加监控功能，因此将加急消息也抽取为接口，加急消息的两种发送方式做为接口的两个实现。</p>
+<p>这个时候，系统的类图结构设计如下。</p>
+<p><div align=center><img src="./imgs/18.png" alt="类图结构1" title="类图结构1" />
+<div align=left></p>
+<p>仔细观察这个类图，会发现一个很明显的问题，通过这种继承的方式来扩展消息处理，会非常不方便。举个例子，假如我们要在此基础上添加一个特急消息的处理：特急消息不需要进行监控，只要没有完成，就直接催促，也就是说，对于特急消息，在普通消息的基础上，需要添加催促的功能。而特急消息的发送方式还是发送站内短消息和E-Mail两种，此时的类图结构如下。 </p>
+<p><div align=center><img src="./imgs/19.png" alt="类图结构2" title="类图结构2" />
+<div align=left></p>
+<p>从以上过程可以看到，我们在实现加急消息处理的时候，必须实现站内短消息和E-Mail两种处理方式；在实现特急消息处理的时候，又必须实现站内短消息和E-Mail两种处理方式。</p>
+<p>这意味着，以后每次扩展一种消息处理，都必须要实现站内短消息和E-Mail两种处理方式，是不是很痛苦？</p>
+<p>这还不算完，如果要添加新的消息发送方式呢？继续扩展功能，添加手机短消息的发送方式，类图结构扩展如下。  </p>
+<p><div align=center><img src="./imgs/20.png" alt="类图结构3" title="类图结构3" />
+<div align=left></p>
+<p>仔细观察现在的实现，如果此时再添加一种消息处理，则需要添加系统内短消息、邮件和手机消息三个实现。按照这种实现方式继续扩展下去，消息类的数量会急剧增加，极易出现“类膨胀”。</p>
+<p>遇到类似以上这种情况，应该如何解决呢？答案：使用桥接模式。 </p>
+<h1>三、桥接模式的结构</h1>
+<p>仔细分析上面的示例，会发现示例中消息的变化具有两个维度，一个维度是抽象的消息这边，包括普通消息、加急消息和特急消息；另一个维度是在消息的发送方式上，包括站内短消息、E-Mail和手机短消息。这两个维度一共可以组合出9种不同的可能性来，它们的关系如下。 </p>
+<p><div align=center><img src="./imgs/21.png" alt="类图结构4" title="类图结构4" />
+<div align=left></p>
+<p>现在出现问题的根本原因，就在于消息的抽象和实现是混杂在一起的，这就导致一个维度的变化会引起另一个维度进行相应的变化，从而使得程序扩展起来非常困难。 要解决这个问题，就必须把这两个维度分开，也就是将抽象部分和实现部分分开，让它们相互独立，这样就可以实现独立的变化，使扩展变得简单。桥接模式就可以达到这种效果，以下是桥接模式的结构示意图。 </p>
+<p><div align=center><img src="./imgs/22.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>桥接模式涉及的角色及其职责如下：</p>
+<ul>
+<li>Abstraction：抽象部分的接口。通常在这个对象中，要维护一个实现部分的对象引用，抽象对象里面的方法，需要调用实现部分的对象来完成，这个对象中的方法，通常都是和具体的业务相关的方法。</li>
+<li>RefinedAbstraction：扩展抽象部分的接口。通常在这些对象中，定义跟实际业务相关的方法，这些方法实现通常会使用Abstraction中定义的方法，也可能会调用实现部分的对象来完成。</li>
+<li>Implementor：定义实现部分的接口。这个接口不用和Abstraction中定义的方法一致，通常是由Implementor接口提供基本的操作。而 Abstraction中定义的是基于这些基本操作的业务方法，也就是说 Abstraction定义了基于这些基本操作的较高层次的操作。</li>
+<li>ConcreteImplementor：真正实现 Implementor接口的对象。 </li>
+</ul>
+<p>桥接模式结构示意源代码如下： </p>
+<pre><code>public abstract class Abstraction {
+
+    /**
+     * 持有一个实现部分的对象
+     */
+    protected Implementor impl;
+
+    /**
+     * 构造方法，传入一个实现部分的对象
+     */
+    public Abstraction(Implementor impl) {
+        this.impl = impl;
+    }
+
+    /**
+     * 示例操作，实现一定的功能，可能需要调用实现部分的具体实现方法
+     */
+    public void operation() {
+        impl.operationImpl();
+    }
+
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public interface Implementor {  
+
+    /** 
+     * 示例方法，实现抽象部分需要的某些具体功能 
+     */  
+    public void operationImpl();  
+}  
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class RefinedAbstraction extends Abstraction {  
+
+    public RefinedAbstraction(Implementor impl) {  
+        super(impl);  
+    }  
+
+    /** 
+     * 示例操作，实现一定的功能 
+     */  
+    public void otherOperation() {  
+        // 实现一定的功能，可能会使用具体实现部分的实现方法  
+        // 但是本方法更大的可能是使用Abstraction中定义的方法  
+        // 通过组合使用Abstraction中定义的方法来完成更多的功能  
+
+    }  
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class ConcreteImplementorA implements Implementor {
+
+    @Override
+    public void operationImpl() {
+        // 真正的实现
+
+    }
+
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class ConcreteImplementorB implements Implementor {  
+
+    @Override  
+    public void operationImpl() {  
+        // 真正的实现  
+
+    }  
+
+}
+</code></pre>
+
+<h1>四、使用桥接模式重写消息示例</h1>
+<p>先实现普通消息和加急消息的功能，发送方式先实现站内短消息和E-mail两种，使用桥接模式来实现这些功能的类图结构如下。</p>
+<p><div align=center><img src="./imgs/23.png" alt="重写消息示意图" title="重写消息示意图" />
+<div align=left></p>
+<p>下面是各个类的实现代码。  </p>
+<pre><code>/**
+ * 抽象的消息对象
+ */
+public abstract class AbstractMessage {
+
+    /**
+     * 持有一个实现部分的对象
+     */
+    protected MessageImplementor impl;
+
+    /**
+     * 构造方法，传入实现部分的对象
+     * @param impl 实现部分的对象
+     */
+    public AbstractMessage(MessageImplementor impl) {
+        this.impl = impl;
+    }
+
+    /**
+     * 发送消息，转调实现部分的方法
+     * @param message 消息的内容
+     * @param toUser  消息的接收人
+     */
+    public void sendMessage(String message, String toUser) {
+        this.impl.send(message, toUser);
+    }
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>/**
+ * 实现发送消息的统一接口
+ */
+public interface MessageImplementor {
+
+    /**
+     * 发送消息
+     * 
+     * @param message 消息的内容
+     * @param toUser  消息的接收人
+     */
+    public void send(String message, String toUser);
+
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class CommonMessage extends AbstractMessage {
+
+    public CommonMessage(MessageImplementor impl) {
+        super(impl);
+    }
+
+    public void sendMessage(String message, String toUser){
+        //对于普通消息，什么都不干，直接调用父类的方法，把消息发送出去
+        super.sendMessage(message, toUser);
+    }
+
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class UrgencyMessage extends AbstractMessage {
+
+    public UrgencyMessage(MessageImplementor impl) {
+        super(impl);
+    }
+
+    public void sendMessage(String message, String toUser) {
+        // 对于加急消息，在消息上添加“加急”标识，再调用父类的方法，把消息发送出去
+        message = &quot;[加急]&quot; + message;
+        super.sendMessage(message, toUser);
+    }
+
+    /**
+     * 扩展自己的新功能：监控某消息的处理过程
+     * @param message 被监控的消息
+     * @return 包含监控到的数据对象，此处用Object示意
+     */
+    public Object watch(AbstractMessage message) {
+        return null;
+    }
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class MessageSMS implements MessageImplementor {
+
+    @Override
+    public void send(String message, String toUser) {
+        System.out.println(&quot;使用站内短消息的方式，发送消息:&quot;+message+&quot;给&quot;+toUser);
+
+    }
+
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class MessageEmail implements MessageImplementor {
+
+    @Override
+    public void send(String message, String toUser) {
+        System.out.println(&quot;使用E-mail的方式，发送消息:&quot; + message + &quot;给&quot; + toUser);
+
+    }
+
+}
+</code></pre>
+
+<p>继续添加对特急消息的处理，同时添加发送手机消息的方式，该如何实现？</p>
+<p>很简单，只需要在抽象部分再添加一个特急消息的类，扩展抽象消息就可以把特急消息的处理功能加入到系统中；对于添加手机发送消息的方式也很简单，在实现部分新增加一个实现类，实现使用手机发送消息的方式就可以了。</p>
+<p>新添加的两个类，代码如下。 </p>
+<pre><code>public class SpecialUrgencyMessage extends AbstractMessage {
+
+    public SpecialUrgencyMessage(MessageImplementor impl) {
+        super(impl);
+    }
+
+    public void hurry(AbstractMessage message) {
+        // 执行催促的功能，发出催促的信息
+    }
+
+    public void sendMessage(String message, String toUser) {
+        // 对于特急消息，在消息上添加“特急”标识，再调用父类的方法，把消息发送出去
+        message = &quot;[特急]&quot; + message;
+        super.sendMessage(message, toUser);
+        // 还需要增加一条待催促的信息
+    }
+}
+</code></pre>
+
+<p><br/> </p>
+<pre><code>public class MessageMobile implements MessageImplementor {
+
+    @Override
+    public void send(String message, String toUser) {
+        System.out.println(&quot;使用手机短消息的方式，发送消息:&quot; + message + &quot;给&quot; + toUser);
+
+    }
+
+}
+</code></pre>
+
+<p>写个客户端类来测试一下，代码如下。  </p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+        // 创建具体的实现对象
+        MessageImplementor impl = new MessageSMS();
+
+        // 创建一个普通消息对象
+        AbstractMessage m = new CommonMessage(impl);
+        m.sendMessage(&quot;今晚8点，时代广场，不见不散！&quot;, &quot;小乔&quot;);
+
+        // 创建一个紧急消息对象
+        m = new UrgencyMessage(impl);
+        m.sendMessage(&quot;半小时后召开紧急会议！&quot;, &quot;小周&quot;);
+
+        // 创建一个特急消息对象
+        m = new SpecialUrgencyMessage(impl);
+        m.sendMessage(&quot;领导过来视察了，速回！&quot;, &quot;小明&quot;);
+
+        // 把发送方式切换成手机短消息，将以上内容重发一遍
+        impl = new MessageMobile();
+
+        // 创建一个普通消息对象
+        m = new CommonMessage(impl);
+        m.sendMessage(&quot;今晚8点，时代广场，不见不散！&quot;, &quot;小乔&quot;);
+
+        // 创建一个紧急消息对象
+        m = new UrgencyMessage(impl);
+        m.sendMessage(&quot;半小时后召开紧急会议！&quot;, &quot;小周&quot;);
+
+        // 创建一个特急消息对象
+        m = new SpecialUrgencyMessage(impl);
+        m.sendMessage(&quot;领导过来视察了，速回！&quot;, &quot;小明&quot;);
+
+    }
+
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>使用站内短消息的方式，发送消息:今晚8点，时代广场，不见不散！给小乔<br />
+使用站内短消息的方式，发送消息:[加急]半小时后召开紧急会议！给小周<br />
+使用站内短消息的方式，发送消息:[特急]领导过来视察了，速回！给小明<br />
+使用手机短消息的方式，发送消息:今晚8点，时代广场，不见不散！给小乔<br />
+使用手机短消息的方式，发送消息:[加急]半小时后召开紧急会议！给小周<br />
+使用手机短消息的方式，发送消息:[特急]领导过来视察了，速回！给小明  </p>
+<h1>五、桥接模式的适用性</h1>
+<p>在以下的情况下可以考虑使用桥接模式：</p>
+<p>1．如果你不希望在抽象部分和实现部分采用固定的绑定关系，可以采用桥接模式，来把抽象部分和实现部分分开，然后在程序运行期间来动态地设置抽象部分需要用到的具体的实现，还可以动态地切换具体的实现。</p>
+<p>2．如果出现抽象部分和实现部分都能够扩展的情况，可以采用桥接模式，让抽象部分和实现部分独立地变化，从而灵活地进行单独扩展，而不是搅在一起，扩展一边就会影响到另一边。</p>
+<p>3．如果希望实现部分的修改不会对客户产生影响，可以采用桥接模式。由于客户是面向抽象的接口在运行，实现部分的修改可以独立于抽象部分，并不会对客户产生影响，也可以说对客户是透明的。</p>
+<p>4．如果采用继承的实现方案，会导致产生很多子类，对于这种情况，可以考虑采用桥接模式，分析功能变化的原因，看看是否能分离成不同的维度，然后通过桥接模式来分离它们，从而减少子类的数目。 </p>
+<h1>六、桥接模式的特点</h1>
+<ul>
+<li>分离抽象和实现部分</li>
+</ul>
+<p>桥接模式分离了抽象部分和实现部分，从而极大地提高了系统的灵活性。让抽象部分和实现部分独立开来，分别定义接口，这有助于对系统进行分层，从而产生更好的结构化的系统。对于系统的高层部分，只需要知道抽象部分和实现部分的接口就可以了。</p>
+<ul>
+<li>更好的扩展性</li>
+</ul>
+<p>由于桥接模式把抽象部分和实现部分分离开了，而且分别定义接口，这就使得抽象部分和实现部分可以分别独立地扩展，而不会相互影响，从而大大地提高了系统的可扩展性。</p>
+<ul>
+<li>可动态地切换实现</li>
+</ul>
+<p>桥接模式把抽象部分和实现部分分离开了，所以在实现桥接的时候，就可以实现动态地选择和使用具体的实现。也就是说一个实现不再是固定地绑定在一个抽象接口上了，可以实现运行期间动态地切换。</p>
+<ul>
+<li>可减少子类的个数</li>
+</ul>
+<p>对于有两个变化维度的情况，如果采用继承的实现方式，大约需要两个维度上的可变化数量的乘积个子类；而采用桥接模式来实现，大约需要两个维度上的可变化数量的和个子类。可以明显地减少子类的个数。</p>
+<h1>七、总结</h1>
+<p>桥接模式很好地实现了面向对象设计中的开闭原则和多用对象组合、少用对象继承原则，它的本质是：分离抽象和实现。只有把抽象部分和实现部分分离开了，才能够让它们独立地变化；只有抽象部分和实现部分可以独立地变化，系统才会有更好的可扩展性和可维护性。</p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>职责链模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是职责链模式</h1>
+<p>职责链(Chain of Responsibility)模式是一种对象的行为模式。在职责链模式里，很多对象由每一个对象对其下家的引用而连接起来形成一条链。请求在这个链上传递，直到链上的某一个对象决定处理此请求。发出这个请求的客户端并不知道链上的哪一个对象最终处理这个请求，这使得系统可以在不影响客户端的情况下动态地重新组织和分配职责。</p>
+<p>职责链模式的本质：分离职责、动态组合。</p>
+<p>设计意图：使多个对象都有机会处理请求，从而避免请求的发送者和接收者之间的耦合关系。将这些对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理它为止。  </p>
+<h1>二、职责链模式的结构</h1>
+<p><div align=center><img src="./imgs/24.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>职责链模式涉及的角色及其职责如下：</p>
+<ul>
+<li>抽象处理者(Handler)角色：定义职责的接口，通常在这里定义处理请求的方法，如果需要，接口可以定义出一个方法以设定和返回对后继处理者的引用。</li>
+<li>具体处理者(ConcreteHandler)角色：实现职责的类，在这个类中，实现对在它职责范围内请求的处理，如果不处理，就继续转发请求给后继处理者。</li>
+<li>客户端(Client)角色：职责链的客户端，向链上的具体处理对象提交请求，让职责链负责处理。</li>
+</ul>
+<p>职责链模式结构示意源代码如下：</p>
+<p>抽象处理者的示意代码如下。</p>
+<pre><code>/**
+ * 抽象处理者，定义职责的接口，也就是处理请求的接口
+ */
+public abstract class Handler {
+
+    /**
+     * 持有后继的处理者对象
+     */
+    protected Handler successor;
+
+    /**
+     * 赋值方法，设置后继的处理者对象
+     * 
+     * @param successor
+     */
+    public void setSuccessor(Handler successor) {
+        this.successor = successor;
+    }
+
+    /**
+     * 示意处理请求的方法，虽然这个示意方法是没有传入参数的 但实际是可以传入参数的，根据具体需要来选择是否传递参数
+     */
+    public abstract void handleRequest();
+
+}
+</code></pre>
+
+<p>具体处理者示意代码如下。</p>
+<pre><code>public class ConcreteHandlerA extends Handler {
+
+    /**
+     * 处理方法，调用此方法处理请求
+     */
+    @Override
+    public void handleRequest() {
+        // 根据某些条件来判断是否属于自己处理的职责范围,下面這句話只是个示意
+        boolean someCondition = false;
+
+        if (someCondition) {
+            // 如果属于自己处理的职责范围，就在这里处理请求
+            // 具体的处理代码
+        } else {
+            // 如果不属于自己处理的职责范围，那就判断是否还有后继的职责对象
+            // 如果有，就转发请求给后继的职责对象
+            // 如果没有，什么都不做，自然结束
+            if (null != this.successor) {
+                this.successor.handleRequest();
+            }
+        }
+    }
+
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class ConcreteHandlerB extends Handler {
+
+    /**
+     * 处理方法，调用此方法处理请求
+     */
+    @Override
+    public void handleRequest() {
+        // 根据某些条件来判断是否属于自己处理的职责范围,下面這句話只是个示意
+        boolean someCondition = false;
+
+        if (someCondition) {
+            // 如果属于自己处理的职责范围，就在这里处理请求
+            // 具体的处理代码
+        } else {
+            // 如果不属于自己处理的职责范围，那就判断是否还有后继的职责对象
+            // 如果有，就转发请求给后继的职责对象
+            // 如果没有，什么都不做，自然结束
+            if (null != this.successor) {
+                this.successor.handleRequest();
+            }
+        }
+    }
+
+}
+</code></pre>
+
+<p>客户端示意代码如下。</p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+        // 组装职责链
+        Handler handlerA = new ConcreteHandlerA();
+        Handler handlerB = new ConcreteHandlerB();
+        handlerA.setSuccessor(handlerB);
+        // 提交请求
+        handlerA.handleRequest();
+    }
+
+}
+</code></pre>
+
+<h1>三、职责链模式应用举例</h1>
+<p>《研磨设计模式》中给出这么一个场景：申请聚餐费用。</p>
+<p>很多公司都有这样的福利，就是项目组或者是部门可以向公司申请一些聚餐费用，用于组织项目组成员或者是部门成员进行聚餐活动，以增进员工之间的感情，更有利于工作中的相互合作。</p>
+<p>申请聚餐费用的大致流程一般是：由申请人先填写申请单，然后交给领导审批，如果申请批准下来，领导会通知申请人审批通过，然后申请人去财务领取费用，如果没有批准下来，领导会通知申请人审批未通过，此事也就此作罢。</p>
+<p>不同级别的领导，对于审批的额度是不一样的，比如，项目经理只能审批500元以内的申请；部门经理能审批1000元以内的申请；而总经理可以审核任意额度的申请。</p>
+<p>也就是说，当某人提出聚餐费用申请的请求后，该请求会经由项目经理、部门经理、总经理之中的某一位领导来进行相应的处理，但是提出申请的人并不知道最终会由谁来处理他的请求，一般申请人是把自己的申请提交给项目经理，或许最后是由总经理来处理他的请求，但是申请人并不知道应该由总经理来处理他的申请。    </p>
+<p>上述功能可以使用职责链模式来实现：当某人提出聚餐费用申请的请求后，该请求会在 项目经理—〉部门经理—〉总经理 这样一条领导处理链上进行传递，发出请求的人并不知道谁会来处理他的请求，每个领导会根据自己的职责范围，来判断是处理请求还是把请求交给更高级别的领导，只要有领导处理了，传递就结束了。</p>
+<p>需要把每位领导的处理独立出来，实现成单独的职责处理对象，然后为它们提供一个公共的、抽象的父职责对象，这样就可以在客户端来动态地组合职责链，实现不同的功能要求了。 </p>
+<p>以下是使用职责链模式实现示例的类图结构。 </p>
+<p><div align=center><img src="./imgs/25.png" alt="桥接模式应用示意图" title="桥接模式应用示意图" />
+<div align=left></p>
+<p>先定义抽象处理者角色，在这个类中持有下一个处理请求的对象，同时还要定义业务处理方法，示例代码如下：</p>
+<pre><code>/**
+ * 抽象处理者，定义职责的接口，也就是处理请求的接口
+ */
+public abstract class Handler {
+
+    /**
+     * 持有后继的处理者对象
+     */
+    protected Handler successor=null;
+
+    /**
+     * 赋值方法，设置后继的处理者对象
+     * 
+     * @param successor
+     */
+    public void setSuccessor(Handler successor) {
+        this.successor = successor;
+    }
+
+    /**
+     * 处理聚餐费用的申请
+     * @param user 申请人
+     * @param fee 申请的钱数
+     */
+    public abstract String handleFeeRequest(String user,double fee);
+
+}
+</code></pre>
+
+<p>假设现在的费用申请处理流程如下：申请人提出的申请交给项目经理处理，项目经理的处理权限是500元内，超过500元，把申请转给部门经理处理，部门经理的处理权限是1000元以内，超过1000元，把申请转给总经理处理。</p>
+<p>具体处理者代码实现如下：</p>
+<pre><code>public class ProjectManager extends Handler {
+
+    public String handleFeeRequest(String user,double fee) {
+        String str=&quot;&quot;;
+        //项目经理处理权限比较小，只能处理500元以内的费用申请
+        if(fee&lt;500){
+            //为了测试，简单点，只同意小李的申请
+            if(&quot;小李&quot;.equals(user)){
+                str=&quot;项目经理同意&quot;+user+&quot;聚餐费用&quot;+fee+&quot;元的请求...&quot;;
+            }
+            else{
+            //其他人的申请一律不同意
+                str=&quot;项目经理不同意&quot;+user+&quot;聚餐费用&quot;+fee+&quot;元的请求...&quot;;
+            }
+        }
+        else{
+            //超过500元的费用申请，继续传递给级别更高的人处理
+            if(this.successor!=null){
+                return successor.handleFeeRequest(user, fee);
+            }
+
+        }
+        return str;
+    }
+
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class DeptManager extends Handler {
+
+    public String handleFeeRequest(String user, double fee) {
+        String str = &quot;&quot;;
+        // 部门经理只能处理500元以内的费用申请
+        if (fee &lt; 1000) {
+            // 为了测试，简单点，只同意小李的申请
+            if (&quot;小李&quot;.equals(user)) {
+                str = &quot;部门经理同意&quot; + user + &quot;聚餐费用&quot; + fee + &quot;元的请求...&quot;;
+            } else {
+                // 其他人的申请一律不同意
+                str = &quot;部门经理不同意&quot; + user + &quot;聚餐费用&quot; + fee + &quot;元的请求...&quot;;
+            }
+        } else {
+            // 超过1000元的费用申请，继续传递给级别更高的人处理
+            if (this.successor != null) {
+                return successor.handleFeeRequest(user, fee);
+            }
+
+        }
+        return str;
+    }
+
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class GeneralManager extends Handler {
+
+    public String handleFeeRequest(String user,double fee) {
+        String str=&quot;&quot;;
+        //总经理的权限很大，只要请求到了这里，他都可以处理
+        if(fee&gt;=1000){
+            //为了测试，简单点，只同意小李的申请
+            if(&quot;小李&quot;.equals(user)){
+                str=&quot;总经理同意&quot;+user+&quot;聚餐费用&quot;+fee+&quot;元的请求...&quot;;
+            }
+            else{
+            //其他人的申请一律不同意
+                str=&quot;总经理不同意&quot;+user+&quot;聚餐费用&quot;+fee+&quot;元的请求...&quot;;
+            }
+        }
+        else{
+            //如果还有后继的处理者对象，继续传递
+            if(this.successor!=null){
+                return successor.handleFeeRequest(user, fee);
+            }
+
+        }
+        return str;
+    }
+
+}
+</code></pre>
+
+<p>客户端示意代码如下： </p>
+<pre><code>public class Client {
+
+    public static void main(String[] args) {
+        // 先要组装责任链
+        Handler h1 = new GeneralManager();
+        Handler h2 = new DeptManager();
+        Handler h3 = new ProjectManager();
+        h3.setSuccessor(h2);
+        h2.setSuccessor(h1);
+
+        // 开始测试
+        String ret1 = h3.handleFeeRequest(&quot;小李&quot;, 300);
+        System.out.println(&quot;the ret1 = &quot; + ret1);
+        String ret2 = h3.handleFeeRequest(&quot;小张&quot;, 300);
+        System.out.println(&quot;the ret2 = &quot; + ret2);
+        System.out.println(&quot;￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥&quot;);
+
+        String ret3 = h3.handleFeeRequest(&quot;小李&quot;, 700);
+        System.out.println(&quot;the ret3 = &quot; + ret3);
+        String ret4 = h3.handleFeeRequest(&quot;小张&quot;, 700);
+        System.out.println(&quot;the ret4 = &quot; + ret4);
+        System.out.println(&quot;￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥&quot;);
+
+        String ret5 = h3.handleFeeRequest(&quot;小李&quot;, 1500);
+        System.out.println(&quot;the ret5 = &quot; + ret5);
+        String ret6 = h3.handleFeeRequest(&quot;小张&quot;, 1500);
+        System.out.println(&quot;the ret6 = &quot; + ret6);
+    }
+
+}
+</code></pre>
+
+<p>运行程序打印结果如下：  </p>
+<p>the ret1 = 项目经理同意小李聚餐费用300.0元的请求...<br />
+the ret2 = 项目经理不同意小张聚餐费用300.0元的请求...<br />
+￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥<br />
+the ret3 = 部门经理同意小李聚餐费用700.0元的请求...<br />
+the ret4 = 部门经理不同意小张聚餐费用700.0元的请求...<br />
+￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥<br />
+the ret5 = 总经理同意小李聚餐费用1500.0元的请求...<br />
+the ret6 = 总经理不同意小张聚餐费用1500.0元的请求...  </p>
+<h1>四、职责链模式的适用性</h1>
+<p>在以下情况下可以考虑使用职责链模式：</p>
+<ul>
+<li>有多个的对象可以处理一个请求，哪个对象处理该请求运行时刻自动确定。</li>
+<li>你想在不明确指定接收者的情况下，向多个对象中的一个提交一个请求。</li>
+<li>可处理一个请求的对象集合应被动态指定。  </li>
+</ul>
+<h1>五、职责链模式的优缺点</h1>
+<p><strong>职责链模式有以下优点</strong>：</p>
+<ul>
+<li>责任的分担。<br />
+每个类只需要处理自己该处理的工作（不该处理的传递给下一个对象完成），明确各类的责任范围，符合类的最小封装原则。</li>
+<li>可以根据需要自由组合职责流程。<br />
+如果职责流程发生变化，可以通过重新组装对象链便可适应新的职责流程。</li>
+<li>请求者和处理者松散耦合。<br />
+请求者并不知道他发起的请求的处理者是谁，也不知道请求是如何被处理的，他只是负责向职责链发出请求就可以了，实现了请求者和处理者之间的解耦。</li>
+</ul>
+<p><strong>职责链模式有以下缺点</strong>：</p>
+<ul>
+<li>产生很多细粒度职责对象
+职责链模式把功能分散到单独的处理者对象中，也就是每个处理者只处理一部分的请求，在请求处理流程很复杂的情况下，这样会产生大量的细粒度职责对象。</li>
+<li>不一定能被处理
+职责链模式的每个职责对象只负责处理自己职责范围内的请求，因此可能会出现某个请求，在整个职责链上传递完了，都没有职责对象处理它。</li>
+<li>影响执行效率
+因为处理时以链的形式在对象间传递消息，根据实现方式不同，有可能会影响处理的速度。  </li>
+</ul>
+<h1>六、总结</h1>
+<p>职责链模式以分离职责为前提，将复杂的请求处理进行拆分，并分配给一个个的职责类。每个职责类只负责处理请求的一部分，在运行期间职责类进行动态组合，形成一个职责链，请求在链上进行传递和处理。</p>
+<p>动态组合才是职责类模式的精华所在，因为要实现请求者和处理者的解耦，请求者不知道谁才是真正的处理者，因此要动态地把可能的处理者组合起来，由于组合的方式是动态的，这就意味着可以很方便地修改和添加新的处理者，从而让系统更加灵活和具有更好的扩展性。  </p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

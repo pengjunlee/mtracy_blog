@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>装饰模式</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<h1>一、什么是装饰模式</h1>
+<p>装饰（ Decorator ）模式又叫做包装( Wrapper )模式，它通过一种对客户端透明的方式来扩展对象的功能，是继承关系的一个替换方案。 </p>
+<h1>二、装饰模式实现</h1>
+<p>装饰模式通过一种对客户端透明的方式动态地为一个对象附加上新的功能，它可以使客户端在不需要创建更多子类的情况下，自由地对创建对象的功能进行扩展，装饰模式是继承关系的一个替换方案。 </p>
+<p>举个简单的例子：沙发可以坐、可以躺，我们还可以为它添加上按摩功能使它成为保健沙发，我们还可以为它添加上可以展开供人睡觉的功能让它变成沙发床，接下来我们就使用子类继承方式来模拟为沙发添加上这些新功能。 </p>
+<p>首先我们要定义一个沙发Sofa的接口用以声明所有沙发都应该具有的功能，此处额外增加了一个show()方法用来展示沙发的功能。  </p>
+<pre><code>public interface Sofa { 
+    // 测试方法，用以展示沙发具有的功能 
+    public void show(); 
+    // 坐 
+    public void sit(); 
+    // 躺 
+    public void lie(); 
+}
+</code></pre>
+
+<p>接下来我们就要声明普通沙发CommonSofa、SofaBed和HealthCareSofa三种沙发了。 </p>
+<p>普通沙发只能坐和躺。</p>
+<pre><code>    public class CommonSofa implements Sofa { 
+        @Override 
+        public void show() { 
+            this.sit(); this.lie(); 
+        } 
+        @Override public void sit() { 
+            System.out.println(&quot;可以坐&quot;); 
+        } 
+        @Override public void lie() { 
+            System.out.println(&quot;可以躺&quot;); 
+        } 
+    }
+</code></pre>
+
+<p>沙发床除了能坐和躺外，还可以睡觉。</p>
+<pre><code>public class SofaBed implements Sofa {
+    @Override
+    public void show() {
+        this.sit();
+        this.lie();
+        this.sleep();
+    }
+
+    @Override
+    public void sit() {
+        System.out.println(&quot;可以坐&quot;);
+    }
+
+    @Override
+    public void lie() {
+        System.out.println(&quot;可以躺&quot;);
+    }
+
+    public void sleep() {
+        System.out.println(&quot;可以睡觉&quot;);
+    }
+}
+</code></pre>
+
+<p>保健沙发除了坐和躺外，还可以按摩。</p>
+<pre><code>public class HealthCareSofa implements Sofa {
+    @Override
+    public void show() {
+        this.sit();
+        this.lie();
+        this.massage();
+    }
+
+    @Override
+    public void sit() {
+        System.out.println(&quot;可以坐&quot;);
+    }
+
+    @Override
+    public void lie() {
+        System.out.println(&quot;可以躺&quot;);
+    }
+
+    public void massage() {
+        System.out.println(&quot;可以按摩&quot;);
+    }
+}
+</code></pre>
+
+<p>创建一个客户端来进行测试。</p>
+<pre><code>public class Client {
+    public static void main(String[] args) {
+        System.out.println(&quot;---------普通沙发功能如下：---------&quot;);
+        Sofa commonSofa = new CommonSofa();
+        commonSofa.show();
+        System.out.println();
+        System.out.println(&quot;---------沙发床功能如下：---------&quot;);
+        Sofa sofaBed = new SofaBed();
+        sofaBed.show();
+        System.out.println();
+        System.out.println(&quot;---------保健沙发功能如下：---------&quot;);
+        Sofa healthCareSofa = new HealthCareSofa();
+        healthCareSofa.show();
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：</p>
+<p>---------普通沙发功能如下：---------<br />
+可以坐 可以躺<br />
+---------沙发床功能如下：---------<br />
+可以坐 可以躺 可以睡觉<br />
+---------保健沙发功能如下：---------<br />
+可以坐 可以躺 可以按摩  </p>
+<p>以上是通过继承来实现沙发Sofa功能的扩展，功能实现了但却有个严重的缺陷：通过继承实现的功能扩展是静态的，我们必须提前预知需要为对象添加哪些功能，并创建好相应的子类，对象能够扩展哪些功能这是在java虚拟机对类进行加载编译时就已经决定了的，因而是静态的。还是以沙发Sofa为例，如果我们需要创建一个既能睡觉又能按摩的保健沙发床对象时，我们就不得不再新添加一个Sofa的子类（保健沙发床）并为其附加上sleep()和massage()两个方法，倘若以后沙发又增加上可拆洗的功能，对各个功能进行组合我们就要再增加可拆洗沙发、可拆洗沙发床、可拆洗保健沙发、可拆洗保健沙发床四个子类，功能若继续增加势必造成子类数量的成倍增加，出现&quot;类膨胀&quot;情况。 </p>
+<p>装饰模式的设计初衷：以一种更为灵活的方式动态地为对象附加一些新功能，装饰模式的实现结构图如下： </p>
+<p><div align=center><img src="./imgs/3.png" alt="装饰模式结构示意图" title="装饰模式结构示意图" />
+<div align=left></p>
+<p>装饰模式涉及的角色及其职责如下： </p>
+<ul>
+<li>抽象组件(Component)角色： 一个抽象接口，是被装饰类（ConcreteComponent）和装饰类（Decorator）的父接口。 </li>
+<li>具体组件(ConcreteComponent)角色：抽象组件的实现类。</li>
+<li>抽象装饰(Decorator)角色：包含一个组件的引用，并定义了与抽象组件一致的接口。</li>
+<li>具体装饰(ConcreteDecorator)角色：为抽象装饰角色的实现类，负责具体的装饰(为组件附加上新的功能)。 </li>
+</ul>
+<p>接下来我们使用装饰模式来实现沙发的功能扩展，首先定义一个沙发Sofa的接口同上，担当装饰模式中的抽象组件角色。</p>
+<pre><code>public interface Sofa {
+
+    // 测试方法，用以展示沙发所具有的功能
+    public void show();
+
+    // 坐
+    public void sit();
+
+    // 躺
+    public void lie();
+}
+</code></pre>
+
+<p>再定义一个Sofa接口的实现类，扮演装饰模式中的具体组件角色。 </p>
+<pre><code>public class CommonSofa implements Sofa {
+    @Override
+    public void show() {
+        this.sit();
+        this.lie();
+    }
+
+    @Override
+    public void sit() {
+        System.out.println(&quot;可以坐&quot;);
+    }
+
+    @Override
+    public void lie() {
+        System.out.println(&quot;可以躺&quot;);
+    }
+}
+</code></pre>
+
+<p>再定义一个抽象装饰角色，其内部要包含一个被装饰对象的引用，并实现抽象组件的所有接口</p>
+<pre><code>public class SofaDecorator implements Sofa {
+    // 私有的被装饰对象的引用
+    private Sofa sofa; 
+
+        // 公有的获取被装饰对象的方法
+    public Sofa getSofa() {
+        return sofa;
+    }
+
+    public void setSofa(Sofa sofa) {
+        this.sofa = sofa;
+    }
+
+    public SofaDecorator(Sofa sofa) {
+        this.sofa = sofa;
+    }
+
+    public void show() {
+        this.sit();
+        this.lie();
+    }
+
+    @Override
+    public void sit() {
+        System.out.println(&quot;可以坐&quot;);
+    }
+
+    @Override
+    public void lie() {
+        System.out.println(&quot;可以躺&quot;);
+    }
+}
+</code></pre>
+
+<p>最后创建具体装饰角色，为被装饰对象附件上新功能</p>
+<pre><code>public class BedDecorator extends SofaDecorator {
+    public BedDecorator(Sofa sofa) {
+        super(sofa);
+    }
+
+    public void show() {
+        this.getSofa().show();
+        this.sleep();
+    } // 为沙发添加睡觉功能
+
+    public void sleep() {
+        System.out.println(&quot;可以睡觉&quot;);
+    }
+}
+</code></pre>
+
+<p><br/></p>
+<pre><code>public class HealthCareDecorator extends SofaDecorator {
+    public HealthCareDecorator(Sofa sofa) {
+        super(sofa);
+    }
+    public void show() {
+        this.getSofa().show();
+        this.massage();
+    }
+    // 为沙发添加按摩功能
+    public void massage() {
+        System.out.println(&quot;可以按摩&quot;);
+    }
+}
+</code></pre>
+
+<p>创建一个客户端测试一下，其代码如下：</p>
+<pre><code>public class MainClass {
+    public static void main(String[] args) { // 先创建一个要被装饰的普通沙发对象
+        Sofa sofa = new CommonSofa();
+        System.out.println(&quot;---------普通沙发功能如下：---------&quot;);
+        sofa.show();
+        System.out.println(); // 用BedDecorator对创建好的普通沙发对象进行装饰，为其增加睡觉功能
+        System.out.println(&quot;---------沙发床功能如下：---------&quot;);
+        Sofa sofaBed = new BedDecorator(sofa);
+        sofaBed.show();
+        System.out.println(); // 用HealthCareDecorator对创建好的普通沙发对象进行装饰，为其增加按摩功能
+        System.out.println(&quot;---------保健沙发功能如下：---------&quot;);
+        Sofa healthCareSofa = new HealthCareDecorator(sofa);
+        healthCareSofa.show();
+        System.out.println(); // 用HealthCareDecorator对创建好的沙发床对象进行装饰，为其增加按摩功能
+        System.out.println(&quot;---------保健沙发床功能如下：---------&quot;);
+        Sofa healthCareSofaBed = new HealthCareDecorator(sofaBed);
+        healthCareSofaBed.show();
+    }
+}
+</code></pre>
+
+<p>运行程序打印结果如下：</p>
+<p>---------普通沙发功能如下：---------<br />
+可以坐 可以躺<br />
+---------沙发床功能如下：--------- <br />
+可以坐 可以躺 可以睡觉<br />
+---------保健沙发功能如下：--------- <br />
+可以坐 可以躺 可以按摩<br />
+---------保健沙发床功能如下：--------- <br />
+可以坐 可以躺 可以睡觉 可以按摩  </p>
+<p>装饰模式通过对普通沙发的功能进行层层装饰，最终连具有保健和睡觉功能的沙发也创建成功了。 </p>
+<h1>三、装饰模式的特点</h1>
+<ol>
+<li>装饰对象和真实对象有相同的接口。</li>
+<li>装饰对象包含一个真实对象的引用（reference） </li>
+<li>装饰对象接受所有的来自客户端的请求。它把这些请求转发给真实的对象。</li>
+<li>装饰对象可以在转发这些请求以前或以后增加一些附加功能。这样就确保了在运行时，不用修改给定对象的结构就可以在外部增加附加的功能。  </li>
+</ol>
+<h1>参考文章</h1>
+<p><a href="http://www.cnblogs.com/java-my-life/archive/2012/04/20/2455726.html" title="《JAVA与模式》之装饰模式">http://www.cnblogs.com/java-my-life/archive/2012/04/20/2455726.html</a></p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->

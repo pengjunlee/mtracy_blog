@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>字节码指令表</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+<script type="text/javascript">
+    function wrapOldContentByDiv() {
+        var oldContentDiv = document.createElement("div");
+        oldContentDiv.style.cssText = "float:right; width:72%; padding-left: 3%; padding-right:3%;border: 2px solid #CACACA;";
+        oldContentDiv.innerHTML = document.body.innerHTML;
+        document.body.style["max-width"] = "100%";
+        document.body.style["margin"] = "20px";
+        document.body.style["padding"] = "0";
+        document.body.innerHTML = '';
+        document.body.appendChild(oldContentDiv);
+    };
+
+    function addDirectorySwitch(directoryDiv) {
+        var directorySwitchP = document.createElement("p");
+        directorySwitchP.style.cssText = "text-align: left; margin: 0;";
+        directoryDiv.appendChild(directorySwitchP);
+
+        var ele_span = document.createElement("span");
+        ele_span.style.cssText = "font-weight: 1000;";
+        var ele_text = document.createTextNode("目录");
+        ele_span.appendChild(ele_text);
+
+        var ele_a = document.createElement("a");
+        ele_a.appendChild(document.createTextNode("[-]"));
+        ele_a.setAttribute("href", "#");
+        ele_a.setAttribute("onclick", "javascript:return switchAllDirectory(this);");
+        ele_a.setAttribute("title", "Click to Open TOC");
+
+        ele_span.appendChild(ele_a);
+        directorySwitchP.appendChild(ele_span);
+    }
+
+    function createTree(parentNode, tags, index, maxLevel) {
+        if (index >= tags.length) {
+            return -1;
+        }
+
+        var lastLevel = -1;
+        for (var i = index; i < tags.length; i++) {
+            var header = tags[i];
+            var level = parseInt(header.tagName.substr(1), 10);
+
+            var childNode = {'tag': header, 'childNodes': [], 'level': level};
+            if (level > parentNode.level) {
+                if (lastLevel > 0 && level > lastLevel) {
+                    // 子子类
+                    index = createTree(parentNode.childNodes[parentNode.childNodes.length - 1], tags, i);
+                    if (index < 0) {
+                        return -1;
+                    } else {
+                        i = index - 1;
+                    }
+                } else {
+                    parentNode.childNodes.push(childNode);
+                    lastLevel = level;
+                }
+            } else if (level <= maxLevel && parentNode.level > maxLevel) {
+                parentNode.childNodes.push(childNode);
+                lastLevel = level;
+            } else {
+                return i;
+            }
+        }
+    }
+
+    function createAElement(tag, index) {
+        var a = document.createElement("a");
+        a.style.cssText = "";
+        a.setAttribute("href", "#" + tag.textContent);
+        a.innerHTML = index.toString() + tag.textContent;
+        return a;
+    }
+
+    function createOlElement() {
+        var ol_el = document.createElement("ol");
+        ol_el.style["line-height"] = "180%";
+        ol_el.style["list-style-type"] = "none";
+        ol_el.style["margin-left"] = "0";
+        return ol_el
+    }
+
+    function createEmptyLiElement() {
+        var emptyLiEle = document.createElement("li");
+        return emptyLiEle
+    }
+
+    function getIndex(parentDirectory, directoryLevel, index) {
+        if (directoryLevel === 0) {
+            return parentDirectory + (index + 1).toString() + "."
+        } else {
+            return parentDirectory + (index + 1).toString() + ".";
+        }
+    }
+
+    function createLeafElement(node, curDirectory) {
+        var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+        liEle.appendChild(aEle);
+        return liEle
+    }
+
+    function getArrowDownStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    top: 3px;" +
+            "    display: inline-block;" +
+            "    border: 6px outset;" +
+            "    border-color: black transparent transparent transparent;"
+    }
+
+    function getArrowRightStyle() {
+        return " width: 0;" +
+            "    height: 0;" +
+            "    left: 5px;" +
+            "    position: relative;" +
+            "    margin-right: 8px;" +
+            "    display: inline-block;" +
+            "    border: 6px solid;" +
+            "    border-color: transparent transparent transparent black;"
+    }
+
+    /*
+    <ol>
+        <li><a>根节点1</a></li>
+        <li><a>根节点2</a></li>
+        <li>
+            <div>
+                <a><span>[-]</span>根节点3</a>
+                <ol>
+                    <li><a>子节点1</a></li>
+                    <li><a>子节点2</a></li>
+                    <li><a>子节点3</a></li>
+                </ol>
+            </div>
+        </li>
+        <li><a>根节点4</a></li>
+     </ol>
+    * */
+    // node, 1.2.3 4 0
+    function renderTree(node, parentDirectory, directoryLevel, index) {
+        var childNodes = node.childNodes;
+        var tagContent = node.tag.textContent;
+
+        node.tag.setAttribute("id", tagContent);
+
+        var curDirectory = getIndex(parentDirectory, directoryLevel, index);
+        var directoryName = curDirectory + "&nbsp;" + tagContent;
+
+        // 叶子节点
+        if (childNodes.length === 0) {
+            return "<li style='padding-left: 24px;'><a href='#" + tagContent + "'>" + directoryName + "</a></li>"
+    //                return createLeafElement(node, curDirectory)
+        }
+
+        // 非叶子节点
+        var childContent = "";
+        for (var j = 0; j < node.childNodes.length; j++) {
+            childContent += renderTree(node.childNodes[j], curDirectory, directoryLevel + 1, j);
+        }
+
+        return "<li>" +
+            "   <div>" +
+            "      <div>" +
+            "         <div id='" + directoryName + "' class='open' style='" + getArrowDownStyle() + "' onclick='return switchDirectory(this);'></div>" +
+            "         <a href='#" + tagContent + "' ondblclick='return switchByDbClick(this);'>" + directoryName + "</a>" +
+            "      </div>" +
+            "      <ol id='ol-" + directoryName + "' style='line-height: 180%;list-style-type: none; padding-left: 20px;'>" + childContent + "</ol>" +
+            "   </div>" +
+            "</li>";
+
+        /*var liEle = createEmptyLiElement();
+        var aEle = createAElement(node.tag, curDirectory);
+
+        var parentElement = document.createElement("div");
+        parentElement.appendChild(aEle);
+
+        var olElement = createOlElement();
+
+        var tempNode;
+        for (var j = 0; j < node.childNodes.length; j++) {
+            tempNode = node.childNodes[j];
+            var element = renderTree(tempNode, curDirectory, directoryLevel + 1, j);
+            olElement.appendChild(element);
+        }
+        parentElement.appendChild(olElement);
+
+        liEle.appendChild(parentElement);
+        return liEle;*/
+    }
+
+    function switchByDbClick(aEle) {
+        switchDirectory(aEle.parentElement().firstChild)
+    }
+
+    // 开关目录
+    function switchDirectory(ele) {
+        var divEle = ele.parentNode.parentNode;
+        var olEle = divEle.lastElementChild;
+        if (ele.className === "open") {
+            // 关闭
+            olEle.style.cssText = "display:none;line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "close");
+            ele.style.cssText = getArrowRightStyle();
+        } else if (ele.className === "close") {
+            // 打开
+            olEle.style.cssText = "line-height: 180%;list-style-type: none; padding-left: 20px";
+            ele.setAttribute("class", "open");
+            ele.style.cssText = getArrowDownStyle();
+        }
+    }
+
+    function switchAllDirectory(e) {
+        var rootOlElement = document.getElementById("outline_ol");
+        var ols = rootOlElement.getElementsByTagName("ol");
+        var isOpen = false;
+
+        if (e.innerHTML === '[+]') {
+            e.setAttribute('title', 'collapse');
+            e.innerHTML = '[-]';
+            isOpen = true;
+        } else {
+            e.setAttribute('title', 'expand');
+            e.innerHTML = '[+]';
+        }
+
+
+        for (var i = 0; i < ols.length; i++) {
+            var olEle = ols[i];
+            if (isOpen) {
+                olEle.style.display = "block";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowDownStyle();
+            } else {
+                olEle.style.display = "none";
+                olEle.parentNode.firstElementChild.firstElementChild.style.cssText = getArrowRightStyle();
+            }
+        }
+
+        e.blur();
+        return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1, 将body内容提取到div标签中
+        wrapOldContentByDiv();
+
+        // 2, 创建左边目录列表Div
+        var directoryDiv = document.createElement("div");
+        directoryDiv.setAttribute("id", "outline-list");
+        directoryDiv.style.cssText = "width:20%;height:100%; float:left;font-size:16px,z-index:1;position: fixed;overflow: hidden;";
+
+        // 3, 目录展开折叠开关
+        addDirectorySwitch(directoryDiv);
+
+        // 4, 创建目录列表
+        var directoryOl = document.createElement("ol");
+        directoryOl.style.cssText = "padding-left:14px;line-height:180%;list-style-type:none;height: 85%;padding-bottom: 30px; overflow: auto;";
+        directoryOl.setAttribute("id", "outline_ol");
+        directoryDiv.appendChild(directoryOl);
+        var div1 = document.createElement("div");
+        div1.style.cssText = "clear:both";
+
+        // 插入目录
+        document.body.insertBefore(directoryDiv, document.body.childNodes[0]);
+
+        // 5, 获取所有的H标签
+        var hTags = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+        if (hTags.length < 2)
+            return;
+
+        var rootNode = {'tag': directoryOl, 'childNodes': [], 'level': 0};
+        var maxLevel = parseInt(hTags[0].tagName.substr(1), 10);
+        // 6, 创建树形结构
+        createTree(rootNode, hTags, 0, maxLevel);
+
+        // 7, 绘制树结构
+        var htmlContent = "";
+        for (var j = 0; j < rootNode.childNodes.length; j++) {
+    //                var element = renderTree(rootNode.childNodes[j], '', 1, j);
+    //                directoryOl.appendChild(element);
+
+            htmlContent += renderTree(rootNode.childNodes[j], '', 1, j);
+        }
+        directoryOl.innerHTML = htmlContent;
+    });
+</script>
+</head>
+<body>
+<p><div align=center>《深入理解Java虚拟机JVM高级特性与最佳实践》附录B 虚拟机字节码指令表</p>
+<table>
+<thead>
+<tr>
+	<th>字节码</th>
+	<th>助记符</th>
+	<th>指令含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>0x00</td>
+	<td>nop</td>
+	<td>什么都不做</td>
+</tr>
+<tr>
+	<td>0x01</td>
+	<td>aconst_null</td>
+	<td>将null推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x02</td>
+	<td>iconst_m1</td>
+	<td>将int型-1推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x03</td>
+	<td>iconst_0</td>
+	<td>将int型0推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x04</td>
+	<td>iconst_1</td>
+	<td>将int型1推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x05</td>
+	<td>iconst_2</td>
+	<td>将int型2推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x06</td>
+	<td>iconst_3</td>
+	<td>将int型3推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x07</td>
+	<td>iconst_4</td>
+	<td>将int型4推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x08</td>
+	<td>iconst_5</td>
+	<td>将int型5推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x09</td>
+	<td>lconst_0</td>
+	<td>将long型0推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0a</td>
+	<td>lconst_1</td>
+	<td>将long型1推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0b</td>
+	<td>fconst_0</td>
+	<td>将float型0推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0c</td>
+	<td>fconst_1</td>
+	<td>将float型1推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0d</td>
+	<td>fconst_2</td>
+	<td>将float型2推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0e</td>
+	<td>dconst_0</td>
+	<td>将double型0推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x0f</td>
+	<td>dconst_1</td>
+	<td>将double型1推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x10</td>
+	<td>bipush</td>
+	<td>将单字节的常量值(-128~127)推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x11</td>
+	<td>sipush</td>
+	<td>将一个短整型常量值(-32768~32767)推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x12</td>
+	<td>ldc</td>
+	<td>将int, float或String型常量值从常量池中推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x13</td>
+	<td>ldc_w</td>
+	<td>将int, float或String型常量值从常量池中推送至栈顶（宽索引）</td>
+</tr>
+<tr>
+	<td>0x14</td>
+	<td>ldc2_w</td>
+	<td>将long或double型常量值从常量池中推送至栈顶（宽索引）</td>
+</tr>
+<tr>
+	<td>0x15</td>
+	<td>iload</td>
+	<td>将指定的int型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x16</td>
+	<td>lload</td>
+	<td>将指定的long型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x17</td>
+	<td>fload</td>
+	<td>将指定的float型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x18</td>
+	<td>dload</td>
+	<td>将指定的double型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x19</td>
+	<td>aload</td>
+	<td>将指定的引用类型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1a</td>
+	<td>iload_0</td>
+	<td>将第一个int型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1b</td>
+	<td>iload_1</td>
+	<td>将第二个int型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1c</td>
+	<td>iload_2</td>
+	<td>将第三个int型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1d</td>
+	<td>iload_3</td>
+	<td>将第四个int型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1e</td>
+	<td>lload_0</td>
+	<td>将第一个long型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x1f</td>
+	<td>lload_1</td>
+	<td>将第二个long型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x20</td>
+	<td>lload_2</td>
+	<td>将第三个long型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x21</td>
+	<td>lload_3</td>
+	<td>将第四个long型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x22</td>
+	<td>fload_0</td>
+	<td>将第一个float型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x23</td>
+	<td>fload_1</td>
+	<td>将第二个float型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x24</td>
+	<td>fload_2</td>
+	<td>将第三个float型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x25</td>
+	<td>fload_3</td>
+	<td>将第四个float型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x26</td>
+	<td>dload_0</td>
+	<td>将第一个double型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x27</td>
+	<td>dload_1</td>
+	<td>将第二个double型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x28</td>
+	<td>dload_2</td>
+	<td>将第三个double型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x29</td>
+	<td>dload_3</td>
+	<td>将第四个double型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2a</td>
+	<td>aload_0</td>
+	<td>将第一个引用类型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2b</td>
+	<td>aload_1</td>
+	<td>将第二个引用类型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2c</td>
+	<td>aload_2</td>
+	<td>将第三个引用类型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2d</td>
+	<td>aload_3</td>
+	<td>将第四个引用类型本地变量推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2e</td>
+	<td>iaload</td>
+	<td>将int型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x2f</td>
+	<td>laload</td>
+	<td>将long型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x30</td>
+	<td>faload</td>
+	<td>将float型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x31</td>
+	<td>daload</td>
+	<td>将double型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x32</td>
+	<td>aaload</td>
+	<td>将引用型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x33</td>
+	<td>baload</td>
+	<td>将boolean或byte型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x34</td>
+	<td>caload</td>
+	<td>将char型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x35</td>
+	<td>saload</td>
+	<td>将short型数组指定索引的值推送至栈顶</td>
+</tr>
+<tr>
+	<td>0x36</td>
+	<td>istore</td>
+	<td>将栈顶int型数值存入指定本地变量</td>
+</tr>
+<tr>
+	<td>0x37</td>
+	<td>lstore</td>
+	<td>将栈顶long型数值存入指定本地变量</td>
+</tr>
+<tr>
+	<td>0x38</td>
+	<td>fstore</td>
+	<td>将栈顶float型数值存入指定本地变量</td>
+</tr>
+<tr>
+	<td>0x39</td>
+	<td>dstore</td>
+	<td>将栈顶double型数值存入指定本地变量</td>
+</tr>
+<tr>
+	<td>0x3a</td>
+	<td>astore</td>
+	<td>将栈顶引用型数值存入指定本地变量</td>
+</tr>
+<tr>
+	<td>0x3b</td>
+	<td>istore_0</td>
+	<td>将栈顶int型数值存入第一个本地变量</td>
+</tr>
+<tr>
+	<td>0x3c</td>
+	<td>istore_1</td>
+	<td>将栈顶int型数值存入第二个本地变量</td>
+</tr>
+<tr>
+	<td>0x3d</td>
+	<td>istore_2</td>
+	<td>将栈顶int型数值存入第三个本地变量</td>
+</tr>
+<tr>
+	<td>0x3e</td>
+	<td>istore_3</td>
+	<td>将栈顶int型数值存入第四个本地变量</td>
+</tr>
+<tr>
+	<td>0x3f</td>
+	<td>lstore_0</td>
+	<td>将栈顶long型数值存入第一个本地变量</td>
+</tr>
+<tr>
+	<td>0x40</td>
+	<td>lstore_1</td>
+	<td>将栈顶long型数值存入第二个本地变量</td>
+</tr>
+<tr>
+	<td>0x41</td>
+	<td>lstore_2</td>
+	<td>将栈顶long型数值存入第三个本地变量</td>
+</tr>
+<tr>
+	<td>0x42</td>
+	<td>lstore_3</td>
+	<td>将栈顶long型数值存入第四个本地变量</td>
+</tr>
+<tr>
+	<td>0x43</td>
+	<td>fstore_0</td>
+	<td>将栈顶float型数值存入第一个本地变量</td>
+</tr>
+<tr>
+	<td>0x44</td>
+	<td>fstore_1</td>
+	<td>将栈顶float型数值存入第二个本地变量</td>
+</tr>
+<tr>
+	<td>0x45</td>
+	<td>fstore_2</td>
+	<td>将栈顶float型数值存入第三个本地变量</td>
+</tr>
+<tr>
+	<td>0x46</td>
+	<td>fstore_3</td>
+	<td>将栈顶float型数值存入第四个本地变量</td>
+</tr>
+<tr>
+	<td>0x47</td>
+	<td>dstore_0</td>
+	<td>将栈顶double型数值存入第一个本地变量</td>
+</tr>
+<tr>
+	<td>0x48</td>
+	<td>dstore_1</td>
+	<td>将栈顶double型数值存入第二个本地变量</td>
+</tr>
+<tr>
+	<td>0x49</td>
+	<td>dstore_2</td>
+	<td>将栈顶double型数值存入第三个本地变量</td>
+</tr>
+<tr>
+	<td>0x4a</td>
+	<td>dstore_3</td>
+	<td>将栈顶double型数值存入第四个本地变量</td>
+</tr>
+<tr>
+	<td>0x4b</td>
+	<td>astore_0</td>
+	<td>将栈顶引用型数值存入第一个本地变量</td>
+</tr>
+<tr>
+	<td>0x4c</td>
+	<td>astore_1</td>
+	<td>将栈顶引用型数值存入第二个本地变量</td>
+</tr>
+<tr>
+	<td>0x4d</td>
+	<td>astore_2</td>
+	<td>将栈顶引用型数值存入第三个本地变量</td>
+</tr>
+<tr>
+	<td>0x4e</td>
+	<td>astore_3</td>
+	<td>将栈顶引用型数值存入第四个本地变量</td>
+</tr>
+<tr>
+	<td>0x4f</td>
+	<td>iastore</td>
+	<td>将栈顶int型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x50</td>
+	<td>lastore</td>
+	<td>将栈顶long型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x51</td>
+	<td>fastore</td>
+	<td>将栈顶float型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x52</td>
+	<td>dastore</td>
+	<td>将栈顶doube型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x53</td>
+	<td>aastore</td>
+	<td>将栈顶引用型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x54</td>
+	<td>bastore</td>
+	<td>将栈顶boolean或byte型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x55</td>
+	<td>castore</td>
+	<td>将栈顶char型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x56</td>
+	<td>sastore</td>
+	<td>将栈顶short型数值存入指定数组的指定索引位置</td>
+</tr>
+<tr>
+	<td>0x57</td>
+	<td>pop</td>
+	<td>将栈顶数值弹出 (数值不能是long或double类型的)</td>
+</tr>
+<tr>
+	<td>0x58</td>
+	<td>pop2</td>
+	<td>将栈顶的一个（对于long或double类型)或两个数值（对于非long或double的其他类型）弹出</td>
+</tr>
+<tr>
+	<td>0x59</td>
+	<td>dup</td>
+	<td>复制栈顶数值并将复制值压入栈顶</td>
+</tr>
+<tr>
+	<td>0x5a</td>
+	<td>dup_x1</td>
+	<td>复制栈顶数值并将两个复制值压入栈顶</td>
+</tr>
+<tr>
+	<td>0x5b</td>
+	<td>dup_x2</td>
+	<td>复制栈顶数值并将三个（或两个）复制值压入栈顶</td>
+</tr>
+<tr>
+	<td>0x5c</td>
+	<td>dup2</td>
+	<td>复制栈顶一个（对于long或double类型)或两个（对于非long或double的其他类型）数值并将复制值压入栈顶</td>
+</tr>
+<tr>
+	<td>0x5d</td>
+	<td>dup2_x1</td>
+	<td>dup_x1 指令的双倍版本</td>
+</tr>
+<tr>
+	<td>0x5e</td>
+	<td>dup2_x2</td>
+	<td>dup_x2 指令的双倍版本</td>
+</tr>
+<tr>
+	<td>0x5f</td>
+	<td>swap</td>
+	<td>将栈最顶端的两个数值互换(数值不能是long或double类型)</td>
+</tr>
+<tr>
+	<td>0x60</td>
+	<td>iadd</td>
+	<td>将栈顶两int型数值相加并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x61</td>
+	<td>ladd</td>
+	<td>将栈顶两long型数值相加并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x62</td>
+	<td>fadd</td>
+	<td>将栈顶两float型数值相加并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x63</td>
+	<td>dadd</td>
+	<td>将栈顶两duble型数值相加并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x64</td>
+	<td>isub</td>
+	<td>将栈顶两int型数值相减并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x65</td>
+	<td>lsub</td>
+	<td>将栈顶两long型数值相减并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x66</td>
+	<td>fsub</td>
+	<td>将栈顶两float型数值相减并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x67</td>
+	<td>dsub</td>
+	<td>将栈顶两double型数值相减并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x68</td>
+	<td>imul</td>
+	<td>将栈顶两int型数值相乘并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x69</td>
+	<td>lmul</td>
+	<td>将栈顶两long型数值相乘并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6a</td>
+	<td>fmul</td>
+	<td>将栈顶两float型数值相乘并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6b</td>
+	<td>dmul</td>
+	<td>将栈顶两double型数值相乘并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6c</td>
+	<td>idiv</td>
+	<td>将栈顶两int型数值相除并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6d</td>
+	<td>ldiv</td>
+	<td>将栈顶两long型数值相除并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6e</td>
+	<td>fdiv</td>
+	<td>将栈顶两float型数值相除并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x6f</td>
+	<td>ddiv</td>
+	<td>将栈顶两double型数值相除并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x70</td>
+	<td>irem</td>
+	<td>将栈顶两int型数值作取模运算并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x71</td>
+	<td>lrem</td>
+	<td>将栈顶两long型数值作取模运算并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x72</td>
+	<td>frem</td>
+	<td>将栈顶两float型数值作取模运算并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x73</td>
+	<td>drem</td>
+	<td>将栈顶两double型数值作取模运算并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x74</td>
+	<td>ineg</td>
+	<td>将栈顶int型数值取负并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x75</td>
+	<td>lneg</td>
+	<td>将栈顶long型数值取负并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x76</td>
+	<td>fneg</td>
+	<td>将栈顶float型数值取负并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x77</td>
+	<td>dneg</td>
+	<td>将栈顶double型数值取负并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x78</td>
+	<td>ishl</td>
+	<td>将int型数值左移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x79</td>
+	<td>lshl</td>
+	<td>将long型数值左移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7a</td>
+	<td>ishr</td>
+	<td>将int型数值右（带符号）移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7b</td>
+	<td>lshr</td>
+	<td>将long型数值右（带符号）移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7c</td>
+	<td>iushr</td>
+	<td>将int型数值右（无符号）移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7d</td>
+	<td>lushr</td>
+	<td>将long型数值右（无符号）移位指定位数并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7e</td>
+	<td>iand</td>
+	<td>将栈顶两int型数值作“按位与”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x7f</td>
+	<td>land</td>
+	<td>将栈顶两long型数值作“按位与”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x80</td>
+	<td>ior</td>
+	<td>将栈顶两int型数值作“按位或”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x81</td>
+	<td>lor</td>
+	<td>将栈顶两long型数值作“按位或”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x82</td>
+	<td>ixor</td>
+	<td>将栈顶两int型数值作“按位异或”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x83</td>
+	<td>lxor</td>
+	<td>将栈顶两long型数值作“按位异或”并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x84</td>
+	<td>iinc</td>
+	<td>将指定int型变量增加指定值（i++, i–-, i+=2等）</td>
+</tr>
+<tr>
+	<td>0x85</td>
+	<td>i2l</td>
+	<td>将栈顶int型数值强制转换成long型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x86</td>
+	<td>i2f</td>
+	<td>将栈顶int型数值强制转换成float型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x87</td>
+	<td>i2d</td>
+	<td>将栈顶int型数值强制转换成double型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x88</td>
+	<td>l2i</td>
+	<td>将栈顶long型数值强制转换成int型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x89</td>
+	<td>l2f</td>
+	<td>将栈顶long型数值强制转换成float型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8a</td>
+	<td>l2d</td>
+	<td>将栈顶long型数值强制转换成double型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8b</td>
+	<td>f2i</td>
+	<td>将栈顶float型数值强制转换成int型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8c</td>
+	<td>f2l</td>
+	<td>将栈顶float型数值强制转换成long型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8d</td>
+	<td>f2d</td>
+	<td>将栈顶float型数值强制转换成double型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8e</td>
+	<td>d2i</td>
+	<td>将栈顶double型数值强制转换成int型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x8f</td>
+	<td>d2l</td>
+	<td>将栈顶double型数值强制转换成long型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x90</td>
+	<td>d2f</td>
+	<td>将栈顶double型数值强制转换成float型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x91</td>
+	<td>i2b</td>
+	<td>将栈顶int型数值强制转换成byte型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x92</td>
+	<td>i2c</td>
+	<td>将栈顶int型数值强制转换成char型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x93</td>
+	<td>i2s</td>
+	<td>将栈顶int型数值强制转换成short型数值并将结果压入栈顶</td>
+</tr>
+<tr>
+	<td>0x94</td>
+	<td>lcmp</td>
+	<td>比较栈顶两long型数值大小，并将结果（1，0，-1）压入栈顶</td>
+</tr>
+<tr>
+	<td>0x95</td>
+	<td>fcmpl</td>
+	<td>比较栈顶两float型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将-1压入栈顶</td>
+</tr>
+<tr>
+	<td>0x96</td>
+	<td>fcmpg</td>
+	<td>比较栈顶两float型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将1压入栈顶</td>
+</tr>
+<tr>
+	<td>0x97</td>
+	<td>dcmpl</td>
+	<td>比较栈顶两double型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将-1压入栈顶</td>
+</tr>
+<tr>
+	<td>0x98</td>
+	<td>dcmpg</td>
+	<td>比较栈顶两doube型数值大小，并将结果（1，0，-1）压入栈顶；当其中一个数值为NaN时，将1压入栈顶</td>
+</tr>
+<tr>
+	<td>0x99</td>
+	<td>ifeq</td>
+	<td>当栈顶int型数值等于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9a</td>
+	<td>ifne</td>
+	<td>当栈顶int型数值不等于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9b</td>
+	<td>iflt</td>
+	<td>当栈顶int型数值小于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9c</td>
+	<td>ifge</td>
+	<td>当栈顶int型数值大于等于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9d</td>
+	<td>ifgt</td>
+	<td>当栈顶int型数值大于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9e</td>
+	<td>ifle</td>
+	<td>当栈顶int型数值小于等于0时跳转</td>
+</tr>
+<tr>
+	<td>0x9f</td>
+	<td>if_icmpeq</td>
+	<td>比较栈顶两int型数值大小，当结果等于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa0</td>
+	<td>if_icmpne</td>
+	<td>比较栈顶两int型数值大小，当结果不等于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa1</td>
+	<td>if_icmplt</td>
+	<td>比较栈顶两int型数值大小，当结果小于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa2</td>
+	<td>if_icmpge</td>
+	<td>比较栈顶两int型数值大小，当结果大于等于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa3</td>
+	<td>if_icmpgt</td>
+	<td>比较栈顶两int型数值大小，当结果大于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa4</td>
+	<td>if_icmple</td>
+	<td>比较栈顶两int型数值大小，当结果小于等于0时跳转</td>
+</tr>
+<tr>
+	<td>0xa5</td>
+	<td>if_acmpeq</td>
+	<td>比较栈顶两引用型数值，当结果相等时跳转</td>
+</tr>
+<tr>
+	<td>0xa6</td>
+	<td>if_acmpne</td>
+	<td>比较栈顶两引用型数值，当结果不相等时跳转</td>
+</tr>
+<tr>
+	<td>0xa7</td>
+	<td>goto</td>
+	<td>无条件跳转</td>
+</tr>
+<tr>
+	<td>0xa8</td>
+	<td>jsr</td>
+	<td>跳转至指定16位offset位置，并将jsr下一条指令地址压入栈顶</td>
+</tr>
+<tr>
+	<td>0xa9</td>
+	<td>ret</td>
+	<td>返回至本地变量指定的index的指令位置（一般与jsr或jsr_w联合使用）</td>
+</tr>
+<tr>
+	<td>0xaa</td>
+	<td>tableswitch</td>
+	<td>用于switch条件跳转，case值连续（可变长度指令）</td>
+</tr>
+<tr>
+	<td>0xab</td>
+	<td>lookupswitch</td>
+	<td>用于switch条件跳转，case值不连续（可变长度指令）</td>
+</tr>
+<tr>
+	<td>0xac</td>
+	<td>ireturn</td>
+	<td>从当前方法返回int</td>
+</tr>
+<tr>
+	<td>0xad</td>
+	<td>lreturn</td>
+	<td>从当前方法返回long</td>
+</tr>
+<tr>
+	<td>0xae</td>
+	<td>freturn</td>
+	<td>从当前方法返回float</td>
+</tr>
+<tr>
+	<td>0xaf</td>
+	<td>dreturn</td>
+	<td>从当前方法返回double</td>
+</tr>
+<tr>
+	<td>0xb0</td>
+	<td>areturn</td>
+	<td>从当前方法返回对象引用</td>
+</tr>
+<tr>
+	<td>0xb1</td>
+	<td>return</td>
+	<td>从当前方法返回void</td>
+</tr>
+<tr>
+	<td>0xb2</td>
+	<td>getstatic</td>
+	<td>获取指定类的静态域，并将其值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xb3</td>
+	<td>putstatic</td>
+	<td>为指定的类的静态域赋值</td>
+</tr>
+<tr>
+	<td>0xb4</td>
+	<td>getfield</td>
+	<td>获取指定类的实例域，并将其值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xb5</td>
+	<td>putfield</td>
+	<td>为指定的类的实例域赋值</td>
+</tr>
+<tr>
+	<td>0xb6</td>
+	<td>invokevirtual</td>
+	<td>调用实例方法</td>
+</tr>
+<tr>
+	<td>0xb7</td>
+	<td>invokespecial</td>
+	<td>调用超类构造方法，实例初始化方法，私有方法</td>
+</tr>
+<tr>
+	<td>0xb8</td>
+	<td>invokestatic</td>
+	<td>调用静态方法</td>
+</tr>
+<tr>
+	<td>0xb9</td>
+	<td>invokeinterface</td>
+	<td>调用接口方法</td>
+</tr>
+<tr>
+	<td>0xba</td>
+	<td>invokedynamic</td>
+	<td>调用动态方法</td>
+</tr>
+<tr>
+	<td>0xbb</td>
+	<td>new</td>
+	<td>创建一个对象，并将其引用值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xbc</td>
+	<td>newarray</td>
+	<td>创建一个指定原始类型（如int, float, char等）的数组，并将其引用值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xbd</td>
+	<td>anewarray</td>
+	<td>创建一个引用型（如类，接口，数组）的数组，并将其引用值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xbe</td>
+	<td>arraylength</td>
+	<td>获得数组的长度值并压入栈顶</td>
+</tr>
+<tr>
+	<td>0xbf</td>
+	<td>athrow</td>
+	<td>将栈顶的异常抛出</td>
+</tr>
+<tr>
+	<td>0xc0</td>
+	<td>checkcast</td>
+	<td>检验类型转换，检验未通过将抛出ClassCastException</td>
+</tr>
+<tr>
+	<td>0xc1</td>
+	<td>instanceof</td>
+	<td>检验对象是否是指定的类的实例，如果是将1压入栈顶，否则将0压入栈顶</td>
+</tr>
+<tr>
+	<td>0xc2</td>
+	<td>monitorenter</td>
+	<td>获得对象的锁，用于同步方法或同步块</td>
+</tr>
+<tr>
+	<td>0xc3</td>
+	<td>monitorexit</td>
+	<td>释放对象的锁，用于同步方法或同步块</td>
+</tr>
+<tr>
+	<td>0xc4</td>
+	<td>wide</td>
+	<td>扩展本地变量的宽度</td>
+</tr>
+<tr>
+	<td>0xc5</td>
+	<td>multianewarray</td>
+	<td>创建指定类型和指定维度的多维数组（执行该指令时，操作栈中必须包含各维度的长度值），并将其引用值压入栈顶</td>
+</tr>
+<tr>
+	<td>0xc6</td>
+	<td>ifnull</td>
+	<td>为null时跳转</td>
+</tr>
+<tr>
+	<td>0xc7</td>
+	<td>ifnonnull</td>
+	<td>不为null时跳转</td>
+</tr>
+<tr>
+	<td>0xc8</td>
+	<td>goto_w</td>
+	<td>无条件跳转（宽索引）</td>
+</tr>
+<tr>
+	<td>0xc9</td>
+	<td>jsr_w</td>
+	<td>跳转至指定32位offset位置，并将jsr_w下一条指令地址压入栈顶</td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->
