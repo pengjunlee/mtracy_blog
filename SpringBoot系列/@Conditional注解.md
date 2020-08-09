@@ -192,4 +192,4 @@ I18n 接口的两个实现类 I18nChs 和 I18nEng 定义如下。
 	@ConditionalOnProperty(name = "i18n.lang", havingValue = "en_US", matchIfMissing = false)
 	public class I18nEngImpl implements I18n {//内容同上，此处省略}
 
-本项目源码已上传至CSDN，资源地址：<https://download.csdn.net/download/pengjunlee/10310020>
+本项目源码已上传至CSDN，资源地址： <https://download.csdn.net/download/pengjunlee/10310020>
