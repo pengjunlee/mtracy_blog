@@ -1,370 +1,156 @@
-# 统计学
-统计学可以分为：`描述统计学`和`推断统计学`
+> 原文链接： <https://www.jianshu.com/p/db8dce09232d>
 
-- `描述统计学`（descriptive statistics）：使用特定的数字或图表来体现数据的集中程度和离散程度，例如：某个班某次数学考试的平均分、最高分、各个分数段的人数分布，等等。
-- `推断统计学`（inferential statistic）：以概率论为基础，根据样本数据来推断总体的数量特征。例如：产品质量检查，一般采用抽检，根据所抽样本的质量合格率作为总体的质量合格率的一个估计。
+`Java`和`C++`语言的一个重要区别就是Java中我们无法直接操作一块内存区域，不能像C++中那样可以自己申请内存和释放内存。Java中的`Unsafe`类为我们提供了类似C++手动管理内存的能力。
 
-# 集中趋势
-集中趋势（central tendency）或中央趋势，在统计学中是指一组数据向某一中心值聚拢的程度,它反映了一组数据中心点的位置所在。 最常见的几种集中趋势包括`算数平均数`、`中位数`及`众数`。
+`Unsafe`类，全限定名是`sun.misc.Unsafe`，从名字中我们可以看出来这个类对普通程序员来说是“危险”的，一般应用开发者不会用到这个类。
 
-## 算数平均数
-算术平均数（ arithmetic mean）：又称均值，它是集中趋势测定中最重要的一种平均数，可以分为简单算术平均数和加权算术平均数。
+`Unsafe`类是"final"的，不允许继承。且构造函数是`private`的:
 
-### 简单算术平均数
-主要用于未分组的原始数据，例如，一组数据Xi（i=1,2,......,N）,其简单算术平均数的计算公式为：
+	public final class Unsafe {
+	    private static final Unsafe theUnsafe;
+	    public static final int INVALID_FIELD_OFFSET = -1;
+	
+	    private static native void registerNatives();
+	    // 构造函数是private的，不允许外部实例化
+	    private Unsafe() {
+	    }
+	    ...
+	}
 
+因此我们无法在外部对Unsafe进行实例化。
+
+# 获取Unsafe
+`Unsafe`无法实例化，那么怎么获取`Unsafe`呢？答案就是通过反射来获取`Unsafe`：
+
+	public Unsafe getUnsafe() throws IllegalAccessException {
+	    Field unsafeField = Unsafe.class.getDeclaredFields()[0];
+	    unsafeField.setAccessible(true);
+	    Unsafe unsafe = (Unsafe) unsafeField.get(null);
+	    return unsafe;
+	}
+
+# 主要功能
+`Unsafe`的功能如下图：
 <div align=center>
 
-![算法基础](./imgs/01.png "算法示意图")
+![Unsafe](./imgs/03.jpg "Unsafe示意图")
 <div align=left>
 
-例如，某次数学考试中，5位考生的成绩分别如下：
+## 普通读写
+通过`Unsafe`可以读写一个类的属性，即使这个属性是私有的，也可以对这个属性进行读写。
 
-	70，85，62，98，92
+**读写一个Object属性的相关方法**
 
-则，5位考生成绩的简单算术平均数为： `（70+85+62+98+92）/5 = 81.4`
+	public native int getInt(Object var1, long var2);
+	public native void putInt(Object var1, long var2, int var4);
 
-### 加权算术平均数
-主要用于处理经分组整理的数据，例如，将原始数据分成k组，各组中的值为`X1，X2，...，Xk`，各组的频数分别为`f1，f2，...，fk`，加权算术平均数的计算公式为：
+`getInt`用于从对象的指定偏移地址处读取一个int。`putInt`用于在对象指定偏移地址处写入一个int。其他的`primitive type`也有对应的方法。
 
-<div align=center>
+`Unsafe`**还可以直接在一个地址上读写**
 
-![算法基础](./imgs/02.png "算法示意图")
-<div align=left>
+	public native byte getByte(long var1);
+	public native void putByte(long var1, byte var3);
 
-例如，以下是小明一学期的数学考试成绩：
+`getByte`用于从指定内存地址处开始读取一个byte。`putByte`用于从指定内存地址写入一个byte。其他的`primitive type`也有对应的方法。
 
-|平时测验|期中考试|期末考试|
-|--|--|--|
-|80|90|95|
+## volatile读写
+普通的读写无法保证可见性和有序性，而`volatile`读写就可以保证可见性和有序性。
 
-学校规定的学科综合成绩的计算方式是：
+	public native int getIntVolatile(Object var1, long var2);
+	public native void putIntVolatile(Object var1, long var2, int var4);
 
-|平时测验占比|期中考试占比|期末考试占比|
-|--|--|--|
-|20%|30%|50%|
+`getIntVolatile`方法用于在对象指定偏移地址处`volatile`读取一个`int`。`putIntVolatile`方法用于在对象指定偏移地址处`volatile`写入一个`int`。
 
-那么，小明一学期的数学综合成绩（加权算术平均数）为：
+`volatile`读写相对普通读写是更加昂贵的，因为需要保证可见性和有序性，而与`volatile`写入相比`putOrderedXX`写入代价相对较低，`putOrderedXX`写入不保证可见性，但是保证有序性，所谓有序性，就是保证指令不会重排序。
 
-`（80*20%+90*30%+95*50%）/（20%+30%+50%）= 90.5`
+## 有序写入
+有序写入只保证写入的有序性，不保证可见性，就是说一个线程的写入不保证其他线程立马可见。
 
-# 中位数
-中位数（Median）： 又称中值，将数据按大小顺序进行排列，居于数列中间位置的那个数据就是中位数。如果数据有偶数个，通常取最中间的两个数的平均数作为中位数。
+	public native void putOrderedObject(Object var1, long var2, Object var4);
+	public native void putOrderedInt(Object var1, long var2, int var4);
+	public native void putOrderedLong(Object var1, long var2, long var4);
 
-例如：`58，32，46，92，73，88，23，63` 。
+## 直接内存操作
+我们都知道`Java`不可以直接对内存进行操作，对象内存的分配和回收都是由`JVM`帮助我们实现的。但是`Unsafe`为我们在Java中提供了直接操作内存的能力。
 
-1. 先排序：`23，32，46，58，63，73，88，92`
-2. 找出处于中间位置的数：`58，63`
-3. 中位数为：`（58+63）/2 = 60.5`
+	// 分配内存
+	public native long allocateMemory(long var1);
+	// 重新分配内存
+	public native long reallocateMemory(long var1, long var3);
+	// 内存初始化
+	public native void setMemory(long var1, long var3, byte var5);
+	// 内存复制
+	public native void copyMemory(Object var1, long var2, Object var4, long var5, long var7);
+	// 清除内存
+	public native void freeMemory(long var1);
 
-# 众数
-众数：一组数据中出现次数最多的数值叫作众数，有时众数在一组数中有好几个，常用大写字母`M`来表示。
+## CAS相关
+`JUC`中大量运用了`CAS`操作，可以说`CAS`操作是`JUC`的基础，因此`CAS`操作是非常重要的。`Unsafe`中提供了`int`,`long`和`Object`的`CAS`操作：
 
-例如：`1，2，2，3，3` 中的众数是 `2` 和 `3` ；`1，2，3，4，5` 中没有众数。
+	public final native boolean compareAndSwapObject(Object var1, long var2, Object var4, Object var5);
+	public final native boolean compareAndSwapInt(Object var1, long var2, int var4, int var5);
+	public final native boolean compareAndSwapLong(Object var1, long var2, long var4, long var6);
 
-使用均值、中位数和众数来描述集中趋势的优缺点对比如下：
+`CAS`一般用于乐观锁，它在`Java`中有广泛的应用，`ConcurrentHashMap`，`ConcurrentLinkedQueue`中都有用到`CAS`来实现乐观锁。
 
-||优点|缺点|
-|--|--|--|
-|均值|充分利用所有数据，使用性强|容易受到极端值干扰|
-|中位数|不受极端值干扰|缺乏敏感性|
-|众数|当数据具有明显的集中趋势时，代表性好；不受极端值干扰|缺乏唯一性，可能有一个或多个，也可能一个都没有|
+## 偏移量相关
 
-# 离散趋势
-离散趋势：在统计学上描述观测值偏离中心位置的趋势，反映了所有观测值偏离中心的分布情况。
+	public native long staticFieldOffset(Field var1);
+	public native long objectFieldOffset(Field var1);
+	public native Object staticFieldBase(Field var1);
+	public native int arrayBaseOffset(Class<?> var1);
+	public native int arrayIndexScale(Class<?> var1);
 
-一组观测数据的频数分布有集中趋势和离散趋势两个主要特征。仅仅用集中趋势来描述数据的分布特征是不够的，只有把两者结合起来，才能全面地认识事物。我们经常会碰到平均数相同的两组数据其离散程度可以是不同的。一组数据的分布可能比较集中，差异较小，则平均数的代表性较好。另一组数据可能比较分散，差异较大，则平均数的代表性就较差。描述数据离散趋势的常用指标有极差、四分位数间距、方差、标准差、标准误差和变异系数等，其中方差和标准差最常用。
+- staticFieldOffset方法用于获取静态属性Field在对象中的偏移量，读写静态属性时必须获取其偏移量。
+- objectFieldOffset方法用于获取非静态属性Field在对象实例中的偏移量，读写对象的非静态属性时会用到这个偏移量。
+- staticFieldBase方法用于返回Field所在的对象。arrayBaseOffset方法用于返回数组中第一个元素实际地址相对整个数组对象的地址的偏移量。arrayIndexScale方法用于计算数组中第一个元素所占用的内存空间。
 
-# 极差
-极差：又称范围误差或全距(Range)，以R表示，用来简单地描述观测数据的范围大小，其计算公式为：
+## 线程调度
 
-<div align=center>
+	public native void unpark(Object var1);
+	public native void park(boolean var1, long var2);
+	public native void monitorEnter(Object var1);
+	public native void monitorExit(Object var1);
+	public native boolean tryMonitorEnter(Object var1);
 
-![算法基础](./imgs/03.png "算法示意图")
-<div align=left>
+`park`方法和`unpark`方法相信看过`LockSupport`类的都不会陌生，这两个方法主要用来挂起和唤醒线程。`LockSupport`中的`park`和`unpark`方法正是通过`Unsafe`来实现的：
 
-其中，`Xmax`为观测数据中的最大值，`Xmin`为观测数据中的最小值。
+	// 挂起线程
+	public static void park(Object blocker) {
+	    Thread t = Thread.currentThread();
+	    setBlocker(t, blocker); // 通过Unsafe的putObject方法设置阻塞阻塞当前线程的blocker
+	    UNSAFE.park(false, 0L); // 通过Unsafe的park方法来阻塞当前线程，注意此方法将当前线程阻塞后，当前线程就不会继续往下走了，直到其他线程unpark此线程
+	    setBlocker(t, null); // 清除blocker
+	}
+	
+	// 唤醒线程
+	public static void unpark(Thread thread) {
+	    if (thread != null)
+	        UNSAFE.unpark(thread);
+	}
 
-例如 ：`12，12，13，14，16，21` 的极差为 `21 - 12 = 9` 。
+`monitorEnter`方法和`monitorExit`方法用于加锁，Java中的`synchronized`锁就是通过这两个指令来实现的。
 
-# 方差
-方差：在统计描述中，方差用来计算每一个变量（观测值）与总体平均数之间的差异，其值越大就表示数据越分散，总体方差计算公式为：
+## 类加载
 
-<div align=center>
-
-![算法基础](./imgs/04.png "算法示意图")
-<div align=left>
-
-其中，`Xi` 表示数据集中第 `i` 个数据的值，`μ` 表示数据集的总体均值。
-
-或者简化为：
-
-<div align=center>
-
-![算法基础](./imgs/05.png "算法示意图")
-<div align=left>
-
-例如：`1，2，5，8，9`。
-
-1. 先计算均值为：（1+2+5+8+9） / 5 = 5
-2. 再计算方差为：[（1-5）^ 2 +（2-5）^ 2+（5-5）^ 2+（8-5）^ 2+（9-5）^ 2] / 5 = 10
-
-# 标准差
-标准差：中文环境中又常称均方差，用 σ 表示。标准差是方差的算术平方根，能反映一个数据集的离散程度，平均数相同的两组数据，标准差未必相同 。其计算公式为：
-
-<div align=center>
-
-![算法基础](./imgs/06.png "算法示意图")
-<div align=left>
-
-# 直方图
-直方图：又称质量分布图，是一种统计报告图，由一系列高度不等的纵向条纹或线段表示数据分布的情况。 一般用横轴表示数据类型，纵轴表示分布情况。
-
-例如：以下是某次数学考试，各个分数段的学生人数分布情况（频数分布表）。
-
-|分数段|人数|
-|--|--|
-|0至59|5|
-|60至69|51|
-|70至79|20|
-|80至89|6|
-|90至100|1|
-
-根据频数分布表，画出频数直方图如下：
-
-<div align=center>
-
-![算法基础](./imgs/07.png "算法示意图")
-<div align=left>
-
-# 贝叶斯公式
-贝叶斯公式：也称为`贝叶斯法则`、`贝叶斯定理`或`贝叶斯规则`，是概率统计中应用所观察到的现象对有关概率分布的主观判断（即先验概率）进行修正的标准方法。
-
-通常，事件A在事件B(发生)的条件下的概率，与事件B在事件A的条件下的概率是不一样的；然而，这两者是有确定的关系，贝叶斯法则就是这种关系的陈述。
-<div align=center>
-
-![算法基础](./imgs/08.png "算法示意图")
-<div align=left>
-
-其中P(Ai|B)是在随机事件B发生的情况下随机事件Ai发生的概率。A1，A2，...，An 为完备事件组，即
-<div align=center>
-
-![算法基础](./imgs/09.png "算法示意图")
-<div align=left>
-
-在贝叶斯法则中，每个名词都有约定俗成的名称：
-
-- P(A)是事件A的先验概率或边缘概率。之所以称为"先验"是因为它不考虑任何事件B方面的因素。
-- P(A|B)是已知事件B发生后事件A的条件概率，也由于得自事件B的取值而被称作事件A的后验概率。
-- P(B|A)是已知事件A发生后事件B的条件概率，也由于得自事件A的取值而被称作事件B的后验概率。
-- P(B)是事件B的先验概率或边缘概率，也作标准化常量（normalized constant）。
-
-对于变量有两个以上的情况，贝式定理亦成立。例如：
-
-	P(A|B,C)=P(B|A)*P(A)*P(C|A,B)/(P(B)*P(C|B))
-
-这个式子可以由套用多次两个变量的贝氏定理及条件机率的定义导出。
-
-例如：一棵树生病了，树的主人要外出，便委托邻居帮忙浇水，假设已知如果不浇水，树死去的概率为`0.8`，若浇水则树死去的概率为`0.15`，邻居会记得浇水的概率为`0.9`。
-
-**（1）求主人回来时树还活着的概率**。
-
-<font color=blue>解</font>： 记事件 **A** = {树活着}，事件 **B1** = {邻居记得浇水}，**B2** = {邻居不记得浇水}
-
-P(A)=P(A|B1)P(B1)+P(A|B2)P(B2)=0.85*0.9+0.2*0.1=0.785
-
-**（2）若主人回来时树已经死了，求邻居忘记浇水的概率**。
-
-<font color=blue>解</font>： 记事件 **A** = {树死了}，事件 **B1** = {邻居记得浇水}，**B2** = {邻居忘记浇水}
-<div align=center>
-
-![算法基础](./imgs/10.png "算法示意图")
-<div align=left>
-<div align=center>
-
-![算法基础](./imgs/11.png "算法示意图")
-<div align=left>
-
-# 二项分布
-**二项分布**：二项分布（Binomial Distribution），即重复n次的伯努利试验（Bernoulli Experiment），特别地，当 n = 1 时，二项分布就变成 （0-1）分布了。其中，伯努利试验（Bernoulli experiment）指的是在同样的条件下重复地、相互独立地进行的一种随机试验，其特点是该随机试验只有两种可能结果：发生或者不发生。我们假设该项试验独立重复地进行了n次，那么就称这一系列重复独立的随机试验为n重伯努利试验，或称为伯努利概型。
-
-设在一次试验中，事件A发生的概率为p（0<p<1），则在n重伯努利试验中，事件A恰好发生 k 次的概率为：
-<div align=center>
-
-![算法基础](./imgs/12.png "算法示意图")
-<div align=left>
-
-我们一般习惯上用ξ表示随机试验的结果，记作 ξ~B(n,p)， 即：
-<div align=center>
-
-![算法基础](./imgs/13.png "算法示意图")
-<div align=left>
-
-- 期望：Eξ=np；
-- 方差：Dξ=npq；
-- 其中：q=1-p
-
-例如：抛十次硬币，用 **ξ** 记录正面向上的次数，则 **ξ~B(10,0.5)** 。抛六次骰子，用 **ξ** 记录出现 **6** 点的次数，则 **ξ~B(6,1/6)** 。
-
-# 泊松分布
-**泊松分布**：泊松分布（Poisson distribution）是一种统计与概率学里常见到的离散概率分布（discrete probability distribution），由法国数学家西莫恩·德尼·泊松（Siméon-Denis Poisson）在1838年时发表。它的概率函数为：
-<div align=center>
-
-![算法基础](./imgs/14.png "算法示意图")
-<div align=left>
-
-其中，**λ>0** 是一个常数，则称 **X** 服从参数为 **λ** 的泊松分布，记为 **X~π（λ）**。
-
-泊松分布适合于描述单位时间（或空间）内随机事件发生的次数。如某一服务设施在一定时间内到达的人数，电话交换机接到呼叫的次数，汽车站台的候客人数，机器出现的故障数，自然灾害发生的次数，一块产品上的缺陷数，显微镜下单位分区内的细菌分布数等等。
-
-当二项分布的n很大而p很小时，泊松分布可作为二项分布的近似，其中**λ**为**np**。通常当**n≧20**,**p≦0.05**时，就可以用泊松公式近似得计算。
-
-例如：计算机硬件公司制造某种特殊型号的微型芯片，次品率达 0.1% ，各芯片成为次品相互独立。求在1000只产品中至少有 2 只次品的概率。以 X 记产品中的次品数， X~B(1000,0.001) 。
-
-<font color=blue>解</font>：所求概率为
-<div align=center>
-
-![算法基础](./imgs/15.png "算法示意图")
-<div align=left>
-
-使用泊松分布来近似计算：λ=1000*0.001=1。
-<div align=center>
-
-![算法基础](./imgs/16.png "算法示意图")
-<div align=left>
-
-误差仅为 **-0.00000003** 。
-
-# 分布律
-**分布律**：对于离散型随机变量的概率分布使用分布律进行表示。
-
-例如：将一个硬币抛三次，用 **X** 记录硬币在三次抛掷中正面向上的次数，求 **X** 的概率分布律。
-
-<font color=blue>解</font>：记事件 **H** = { 正面向上 }，事件 **T** = { 背面向上 }
-
-样本空间：**S** = { HHH,HHT,HTH,THH,HTT,THT,TTH,TTT }
-
-**X** 所有可能的取值为：`0，1，2，3`
-
-	P(X=0)=P{ TTT }=1/8
-	P(X=1)=P{ HTT,THT,TTH }=3/8
-	P(X=2)=P{ HHT,HTH,THH }=3/8
-	P(X=3)=P{ HHH }=1/8
-
-则 **X** 的概率分布律表示如下：
-
-|X|0|1|2|3|
-|-|-|-|-|-|
-|P|1/8|3/8|3/8|1/8|
-
-# 分布函数
-**分布函数**：分布函数（累积分布函数，英文Cumulative Distribution Function, 简称CDF），是概率统计中重要的函数，用来描述随机变量的概率分布特征。
-
-设 **X** 是一个随机变量，**x** 是任意实数，函数 **F(x)=P{X<=x}**称为 **X** 的分布函数。
-
-分布函数的性质：
-
-**F(x) 是一个不减函数；**
-<div align=left>
-![算法基础](./imgs/17.png "算法示意图")
-<div align=left>
-- **F(x) 是右连续的；**
-
-将上例中的分布律的累积概率计算出来：
-
-|X|0|1|2|3|
-|-|-|-|-|-|
-|P|1/8|3/8|3/8|1/8|
-|累积概率|1/8|1/2|1/7|1|
-
-绘制成分布函数如下：
-<div align=center>
-![算法基础](./imgs/18.png "算法示意图")
-<div align=left>
-
-# 概率密度函数
-概率密度函数：对于随机变量 X 的分布函数 F(x)，存在非负可积函数 f(x)，使对于任意实数 x 满足：
-<div align=center>
-![算法基础](./imgs/19.png "算法示意图")
-<div align=left>
-
-则称 **X **为连续型随机变量，而 **f(x)** 称为 **X** 的概率密度函数（Probability Density Function），简称概率密度（PDF）。
-
-概率密度函数的性质：
-
-**1. f(x) ≧ 0 且**
-<div align=center>
-![算法基础](./imgs/20.png "算法示意图")
-<div align=left>
-**2. 对于任意实数 x1，x2（x1 ≦ x2 ），满足**
-<div align=center>
-![算法基础](./imgs/21.png "算法示意图")
-<div align=left>
-**3. 若 f(x) 在 x 点连续，则有**
-<div align=center>
-![算法基础](./imgs/22.png "算法示意图")
-<div align=left>
-
-**例如**：一个靶子是半径为 2m 的圆盘，设击中靶上任一同心圆盘上的点的概率与该圆盘的面积成正比，并设射击都能中靶，以 **X** 表示弹着点与圆心的距离，试求随机变量 **X** 的分布函数。
-
-<font color=blue>解</font>：在这个例子中，**X** 的概率密度函数是
-
-<div align=center>
-![算法基础](./imgs/23.png "算法示意图")
-<div align=left>
-
-将 **X** 的概率密度函数绘制成图形如下：
-
-<div align=center>
-![算法基础](./imgs/24.png "算法示意图")
-<div align=left>
-
-根据图形，若是要求**P(0<X<2)**则是求概率密度曲线与 **x=X** ,**y=0** 所围成的绿色三角形的面积，其分布函数如下：
-<div align=center>
-![算法基础](./imgs/25.png "算法示意图")
-<div align=left>
-
-# 均匀分布
-**均匀分布**：在概率论和统计学中，均匀分布也叫矩形分布，它是对称概率分布，在相同长度间隔的分布概率是等可能的。 均匀分布由两个参数a和b定义，它们是数轴上的最小值和最大值，通常缩写为X~U（a，b）。
-
-**均匀分布的概率密度函数为**：
-<div align=center>
-![算法基础](./imgs/26.png "算法示意图")
-<div align=left>
-<div align=center>
-![算法基础](./imgs/27.png "算法示意图")
-<div align=left>
-
-**均匀分布的累积分布函数为**：
-<div align=center>
-![算法基础](./imgs/28.png "算法示意图")
-<div align=left>
-<div align=center>
-![算法基础](./imgs/29.png "算法示意图")
-<div align=left>
-
-# 正态分布
-**正态分布**：正态分布（Normal distribution），也称“常态分布”，又名高斯分布（Gaussian distribution），若随机变量 **X** 服从一个位置参数为 **μ** 、尺度参数为 **σ** 的概率分布，且其概率密度函数为
-<div align=center>
-![算法基础](./imgs/30.png "算法示意图")
-<div align=left>
-
-则这个随机变量就称为正态随机变量，正态随机变量服从的分布就称为正态分布，记作 **X~N(μ,σ ^2)** ，读作 **X** 服从 **N(μ,σ ^2)** ，或 **X** 服从正态分布。
-
-正态曲线呈钟型，两头低，中间高，左右对称因其曲线呈钟形，因此人们又经常称之为钟形曲线。其中，**μ** 为正态分布的期望值决定了正态分布的位置，**σ** 为正态分布的标准差决定了其分布的幅度。
-<div align=center>
-![算法基础](./imgs/31.png "算法示意图")
-<div align=left>
-
-当 **μ = 0**,**σ = 1**时的正态分布就成为标准正态分布。
-<div align=center>
-![算法基础](./imgs/32.png "算法示意图")
-<div align=left>
-
-为了便于描述和应用，常将一般正态分布转化成标准正态分布：
-<div align=center>
-![算法基础](./imgs/33.png "算法示意图")
-<div align=left>
-
-
- 
+	public native Class<?> defineClass(String var1, byte[] var2, int var3, int var4, ClassLoader var5, ProtectionDomain var6);
+	public native Class<?> defineAnonymousClass(Class<?> var1, byte[] var2, Object[] var3);
+	public native Object allocateInstance(Class<?> var1) throws InstantiationException;
+	public native boolean shouldBeInitialized(Class<?> var1);
+	public native void ensureClassInitialized(Class<?> var1);
+
+- defineClass方法定义一个类，用于动态地创建类。
+- defineAnonymousClass用于动态的创建一个匿名内部类。
+- allocateInstance方法用于创建一个类的实例，但是不会调用这个实例的构造方法，如果这个类还未被初始化，则初始化这个类。
+- shouldBeInitialized方法用于判断是否需要初始化一个类。
+- ensureClassInitialized方法用于保证已经初始化过一个类。
+
+## 内存屏障
+
+	public native void loadFence();
+	public native void storeFence();
+	public native void fullFence();
+
+- loadFence：保证在这个屏障之前的所有读操作都已经完成。
+- storeFence：保证在这个屏障之前的所有写操作都已经完成。
+- fullFence：保证在这个屏障之前的所有读写操作都已经完成。

@@ -1,0 +1,638 @@
+> 原文链接：<https://blog.csdn.net/u014440483/article/details/87267160>
+
+前面篇介绍了项目初始化，下面就要开始对项目`webpack`进行配置，由于`vue-cli3`将`webpack`的基础配置全部内嵌了，这就导致我们初始化项目完成之后发现原先的`webpack`的`config`配置全部都消失不见了，那该怎么办呢？别慌，`vue-cli3`早就考虑到了这一点，它预留了一个`vue.config.js`的`js`文件供我们对`webpack`进行自定义配置。
+
+[vue.config.js官方配置指南](https://cli.vuejs.org/zh/config/#vue-config-js "vue.config.js官方配置指南")
+
+# 新建vue.config.js文件
+在项目根目录下新建`vue.config.js`文件与`package.json`同级，下面是我的`vue.config.js`文件,里面有详细的注释，这里不再赘述。
+
+	const path = require('path')
+	 
+	module.exports = {
+	  publicPath: './', // 基本路径
+	  outputDir: 'dist', // 输出文件目录
+	  lintOnSave: false, // eslint-loader 是否在保存的时候检查
+	  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
+	  // webpack配置
+	  chainWebpack: (config) => {
+	  },
+	  configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production'
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development'
+	    }
+	    Object.assign(config, {
+	      // 开发生产共同配置
+	      resolve: {
+	        alias: {
+	          '@': path.resolve(__dirname, './src'),
+	          '@c': path.resolve(__dirname, './src/components'),
+	          '@p': path.resolve(__dirname, './src/pages')
+	        } // 别名配置
+	      }
+	    })
+	  },
+	  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
+	  // css相关配置
+	  css: {
+	    extract: true, // 是否使用css分离插件 ExtractTextPlugin
+	    sourceMap: false, // 开启 CSS source maps?
+	    loaderOptions: {
+	      css: {}, // 这里的选项会传递给 css-loader
+	      postcss: {} // 这里的选项会传递给 postcss-loader
+	    }, // css预设器配置项 详见https://cli.vuejs.org/zh/config/#css-loaderoptions
+	    modules: false // 启用 CSS modules for all css / pre-processor files.
+	  },
+	  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+	  pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
+	  // webpack-dev-server 相关配置
+	  devServer: {
+	    open: process.platform === 'darwin',
+	    host: '0.0.0.0', // 允许外部ip访问
+	    port: 8022, // 端口
+	    https: false, // 启用https
+	    overlay: {
+	      warnings: true,
+	      errors: true
+	    }, // 错误、警告在页面弹出
+	    proxy: {
+	      '/api': {
+	        target: 'http://www.baidu.com/api',
+	        changeOrigin: true, // 允许websockets跨域
+	        // ws: true,
+	        pathRewrite: {
+	          '^/api': ''
+	        }
+	      }
+	    } // 代理转发配置，用于调试环境
+	  },
+	  // 第三方插件配置
+	  pluginOptions: {}
+	}
+
+# 优化打包chunk-vendors.js文件体积过大
+
+当我们运行项目并且打包的时候，会发现`chunk-vendors.js`这个文件非常大，那是因为`webpack`将所有的依赖全都压缩到了这个文件里面，这时我们可以将其拆分，将所有的依赖都打包成单独的js。
+
+​## 方案一
+
+利用`splitChunks`将每个依赖包单独打包，在生产环境下配置，代码如下。
+
+	configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production'
+	      // 将每个依赖包打包成单独的js文件
+	      let optimization = {
+	        runtimeChunk: 'single',
+	        splitChunks: {
+	          chunks: 'all',
+	          maxInitialRequests: Infinity,
+	          minSize: 20000, // 依赖包超过20000bit将被单独打包
+	          cacheGroups: {
+	            vendor: {
+	              test: /[\\/]node_modules[\\/]/,
+	              name (module) {
+	                // get the name. E.g. node_modules/packageName/not/this/part.js
+	                // or node_modules/packageName
+	                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
+	                // npm package names are URL-safe, but some servers don't like @ symbols
+	                return `npm.${packageName.replace('@', '')}`
+	              }
+	            }
+	          }
+	        }
+	      }
+	      Object.assign(config, {
+	        optimization
+	      })
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development'
+	    }
+	    Object.assign(config, {
+	      // 开发生产共同配置
+	      resolve: {
+	        alias: {
+	          '@': path.resolve(__dirname, './src'),
+	          '@c': path.resolve(__dirname, './src/components'),
+	          '@p': path.resolve(__dirname, './src/pages')
+	        } // 别名配置
+	      }
+	    })
+	}
+
+## 方案二
+利用DllPlugin和DllReferencePlugin将依赖包打包成外部文件在index中引入。
+
+### 在`package.json`中新建`library`,用于存储即将要打包的依赖包名和打包后的文件名。
+
+	{
+	    ...
+	    "name": "demo-cli3",
+	  	"version": "1.0.0",
+	    "version_lib": "1.0.0",
+	    "library": {
+	       "lib_v1_0": [
+	           "jquery/dist/jquery.min.js"
+	        ],
+	        "vueBucket_v1_2": [
+	           "vue-router",
+	           "vuex"
+	        ]
+	    },
+	    ...
+	}
+
+### 创建`webpack.dll.config.js`文件，代码如下
+
+	const path = require('path')
+	const webpack = require('webpack')
+	const {library} = require('./package.json')
+	// const assetsSubDirectory = process.env.NODE_ENV === 'production'
+	//   ? build.assetsSubDirectory : dev.assetsSubDirectory
+	let { version_lib } = require('./package.json');
+	version_lib = version_lib.replace(/\./g,'_');
+	module.exports = {
+	  entry: library,
+	  output: {
+	    path: path.resolve(__dirname, './libs/package/js'),
+	    filename: `[name].${version_lib}.dll.js`,
+	    library: '[name]_library'
+	  },
+	  module: {
+	    rules: [
+	      {
+	        test: /\.vue$/,
+	        loader: 'vue-loader'
+	      },
+	      {
+	        test: /\.js$/,
+	        loader: 'babel-loader',
+	        exclude: /node_modules/
+	      }
+	    ]
+	  },
+	  optimization:{
+	    minimizer:[
+	      new UglifyPlugin({
+	        uglifyOptions: {
+	          warnings: false,
+	          compress: {
+	            drop_console: true, // console
+	            drop_debugger: false,
+	            pure_funcs: ['console.log'] // 移除console
+	          }
+	        }
+	      })
+	    ]
+	  },
+	  plugins: [
+	    new webpack.optimize.ModuleConcatenationPlugin(),
+	    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn|en-gb/),
+	    new webpack.DllPlugin({
+	      path: path.resolve(__dirname, './libs/package/json', '[name].manifest.json'),
+	      name: '[name]_library',
+	      context: process.cwd()
+	    })
+	  ]
+	}
+
+### 在vue.config.js中配置DllReferencePlugin
+
+	let { version, version_lib , openGzip,library } = require('./package.json');
+	...
+	module.exports = {
+	  configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production';
+	      ...
+	      Object.assign(config, {
+	        ...
+	        plugins:[
+	          ...config.plugins,
+	          ...Object.keys(library).map(name => {
+	            return new webpack.DllReferencePlugin({
+	              context: process.cwd(),
+	              manifest: require(`./libs/package/json/${name}.manifest.json`),
+	            })
+	          })
+	        ]
+	      });
+	      ...
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development';
+	    }
+	    ...
+	  },
+	}
+	...
+
+### 将打包好的js自动添加进index.html中
+
+**下载**`add-asset-html-webpack-plugin`
+
+	npm install --save-dev add-asset-html-webpack-plugin
+
+在`vue.config.js`中配置`add-asset-html-webpack-plugin`
+
+	const webpack = require('webpack');
+	const path = require('path');
+	const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+	...
+	module.exports = {
+	   ...
+	   configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production';
+	        ...
+	      Object.assign(config, {
+	        ...
+	        plugins:[
+	          ...
+	          new AddAssetHtmlPlugin(Object.keys(library).map(name => {
+	            return {
+	              filepath: require.resolve(path.resolve(`libs/package/js/${name}.${version_lib}.dll.js`)),
+	              outputPath: 'static/lib/js',
+	              publicPath:'./static/lib/js',
+	              includeSourcemap: false
+	            }
+	          })),
+	        ]
+	      });
+	      ...
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development';
+	    }
+	    ...
+	  },
+	  ...
+	}
+
+> 注：方案一、方案二可同时使用，单独使用方案二不需要将vue也添加进打包序列，那样会重复打包（在`chunk-venders.js`中始终会将vue打包进去），若同时使用则不会出现该情况。
+
+至此，打包优化结束，运行打包，你会发现原先的`vender`文件没有了，同时多了好几个依赖的js文件（方案一）
+<div align=center>
+
+![Vue.js](./imgs/A2.png "Vue.js示意图")
+<div align=left>
+
+# 打包时去除打印信息（console）
+## 下载uglifyjs-webpack-plugin
+
+[uglifyjs-webpack-plugin中文文档](https://blog.csdn.net/u013884068/article/details/83511343 "uglifyjs-webpack-plugin中文文档")
+
+	npm install --save-dev uglifyjs-webpack-plugin
+
+## 启用uglifyjs-webpack-plugin
+
+在`vue.config.js`文件中引入，并在`configureWebpack`的`optimization`中添加如下代码：
+
+	const UglifyPlugin = require('uglifyjs-webpack-plugin')
+	module.exports = {
+	    ...
+	 configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production'
+	      // 将每个依赖包打包成单独的js文件
+	      let optimization = {
+	        ...
+	        minimizer: [new UglifyPlugin({
+	          uglifyOptions: {
+	            compress: {
+	              warnings: false,
+	              drop_console: true, // console
+	              drop_debugger: false,
+	              pure_funcs: ['console.log'] // 移除console
+	            }
+	          }
+	        })]
+	      }
+	      Object.assign(config, {
+	        optimization
+	      })
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development'
+	    }
+	    ...
+	  },
+	    ...
+	}
+
+## 打包测试
+运行打包，你会发现我们在页面中写的那些打印日志的代码都消失了。
+
+> <font color=red>注</font>：以上代码适用于`uglifyjs-webpack-plugin 2.1.1`及以前的版本，新版`uglifyjs-webpack-plugin`需写成以下方式。
+
+	...
+	minimizer: [new UglifyPlugin({
+	   uglifyOptions: {
+	       warnings: false,
+	       compress: {
+	         drop_console: true, // console
+	         drop_debugger: false,
+	         pure_funcs: ['console.log'] // 移除console
+	       }
+	   }
+	})]
+	...
+
+# 配置全局jQuery
+## 下载jQuery npm包
+
+	npm install --save-dev jquery
+
+## 设置jquery$别名,代码如下：
+
+	...
+	chainWebpack: (config) => {
+	    // 修复HMR
+	    config.resolve.symlinks(true);
+	    // 别名配置
+	    console.log("__dirname",__dirname);
+	    config.resolve.alias
+	      .set('@', path.resolve(__dirname, './src'))
+	      .set('@a', path.resolve(__dirname, './src/assets'))
+	      .set('@c', path.resolve(__dirname, './src/components'))
+	      .set('@p', path.resolve(__dirname, './src/pages'))
+	      .set('jquery$', 'jquery/dist/jquery.min.js');
+	  },
+	...
+
+## 使用ProvidePlugin插件为jQuery添加全局变量
+
+	...
+	 configureWebpack: (config) => {
+	     ...
+	    Object.assign(config, {
+	      // 开发生产共同配置
+	      // externals: {
+	      //   'vue': 'Vue',
+	      //   'element-ui': 'ELEMENT',
+	      //   'vue-router': 'VueRouter',
+	      //   'vuex': 'Vuex'
+	      // } // 防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(用于csdn引入)
+	      plugins:[
+	        ...config.plugins,
+	        new webpack.ProvidePlugin({
+	          jQuery: "jquery",
+	          $: "jquery",
+	          "windows.jQuery":"jquery"
+	        })
+	      ]
+	    });
+	  },
+	...
+
+至此可以在全局使用`jquery`了。
+
+# 开启gizp压缩
+`gizp`压缩是一种`http`请求优化方式，通过减少文件体积来提高加载速度。`html`、`js`、`css`文件甚至`json`数据都可以用它压缩，可以减小`60%`以上的体积。webpack在打包时可以借助`compression webpack plugin`实现`gzip`压缩。
+
+## 下载compression-webpack-plugin
+
+	npm install -D compression-webpack-plugin
+
+## 开启gizp压缩
+在`package.json`中添加`openGzip`字段，用作`gizp`开启开关：
+
+	{
+	  "name": "demo-cli3",
+	  "version": "1.0.0",
+	  "openGizp": false,
+	  ...
+	}
+
+## vue.config.js中配置如下
+
+	const CompressionPlugin = require("compression-webpack-plugin");
+	...
+	configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production';
+	      // 将每个依赖包打包成单独的js文件
+	      ...
+	      if(openGzip){
+	        config.plugins = [
+	          ...config.plugins,
+	          new CompressionPlugin({
+	            test:/\.js$|\.html$|.\css/, //匹配文件名
+	            threshold: 10240,//对超过10k的数据压缩
+	            deleteOriginalAssets: false //不删除源文件
+	          })
+	        ]
+	      }
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development';
+	    }
+	    ...
+	  },
+	...
+
+> <font color=red>注</font>：生成的压缩文件以`.gz`为后缀，一般浏览器都已支持`.gz`的资源文件，在`http`请求的`Request Headers`中能看到`Accept-Encoding:gzip`。要使服务器返回`.gz`文件，还需要对服务器进行配置，根据`Request Headers`的`Accept-Encoding`标签进行鉴别，如果支持`gzip`就返回`.gz`文件。
+
+# 将版本号添加进打包的js名中
+## 添加配置
+`vue.config.js`中配置如下：
+
+	...
+	let { version , openGzip } = require('./package.json');
+	version = version.replace(/\./g,'_');
+	...
+	module.exports = {
+	  assetsDir: "static",
+	 configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production';
+	        ...
+	      Object.assign(config, {
+	        output:{
+	          ...config.output,
+	          filename: `static/js/[name].[chunkhash].${version}.js`,
+	          chunkFilename: `static/js/[name].[chunkhash].${version}.js`
+	        },
+	        ...
+	      });
+	      ...
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development';
+	    } 
+	    ...
+	  },
+	}
+	...
+
+完整代码如下：
+
+	const webpack = require('webpack');
+	const path = require('path');
+	// const UglifyPlugin = require('uglifyjs-webpack-plugin');
+	const CompressionPlugin = require("compression-webpack-plugin");
+	const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+	let { version, version_lib , openGzip,library } = require('./package.json');
+	version = version.replace(/\./g,'_');
+	version_lib = version_lib.replace(/\./g,'_');
+	module.exports = {
+	  publicPath: './', // 基本路径
+	  outputDir: 'dist', // 输出文件目录
+	  assetsDir: "static",
+	  lintOnSave: false, // eslint-loader 是否在保存的时候检查
+	  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
+	  // webpack配置
+	  chainWebpack: (config) => {
+	    // 修复HMR
+	    config.resolve.symlinks(true);
+	    // 别名配置
+	    config.resolve.alias
+	      .set('@', path.resolve(__dirname, './src'))
+	      .set('@a', path.resolve(__dirname, './src/assets'))
+	      .set('@c', path.resolve(__dirname, './src/components'))
+	      .set('@p', path.resolve(__dirname, './src/pages'))
+	      .set('jquery$', 'jquery/dist/jquery.min.js');
+	  },
+	  configureWebpack: (config) => {
+	    if (process.env.NODE_ENV === 'production') {
+	      // 为生产环境修改配置...
+	      config.mode = 'production';
+	 
+	      // 将每个依赖包打包成单独的js文件
+	     /* let optimization = {
+	        runtimeChunk: 'single',
+	        splitChunks: {
+	          chunks: 'all',
+	          maxInitialRequests: Infinity,
+	          minSize: 20000, // 依赖包超过20000bit将被单独打包
+	          cacheGroups: {
+	            vendor: {
+	              test: /[\\/]node_modules[\\/]/,
+	              name (module) {
+	                // get the name. E.g. node_modules/packageName/not/this/part.js  or node_modules/packageName
+	                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+	                // npm package names are URL-safe, but some servers don't like @ symbols
+	                return `npm.${packageName.replace('@', '')}`;
+	              }
+	            }
+	          }
+	        },
+	        minimizer: [
+	          new UglifyPlugin({
+	            uglifyOptions: {
+	              warnings: false,
+	              compress: {
+	                drop_console: true, // console
+	                drop_debugger: false,
+	                pure_funcs: ['console.log'] // 移除console
+	              }
+	            }
+	          })
+	        ]
+	      };*/
+	      Object.assign(config, {
+	        output:{
+	          ...config.output,
+	          filename: `static/js/[name].[chunkhash].${version}.js`,
+	          chunkFilename: `static/js/[name].[chunkhash].${version}.js`
+	        },
+	        // optimization,
+	        plugins:[
+	          ...config.plugins,
+	          ...Object.keys(library).map(name => {
+	            return new webpack.DllReferencePlugin({
+	              context: process.cwd(),
+	              manifest: require(`./libs/package/json/${name}.manifest.json`),
+	            })
+	          }),
+	          new AddAssetHtmlPlugin(Object.keys(library).map(name => {
+	            return {
+	              filepath: require.resolve(path.resolve(`libs/package/js/${name}.${version_lib}.dll.js`)),
+	              outputPath: 'static/lib/js',
+	              publicPath:'./static/lib/js',
+	              includeSourcemap: false
+	            }
+	          })),
+	        ]
+	      });
+	      if(openGzip){
+	        config.plugins = [
+	          ...config.plugins,
+	          new CompressionPlugin({
+	            test:/\.js$|\.html$|.\css/, //匹配文件名
+	            threshold: 10240,//对超过10k的数据压缩
+	            deleteOriginalAssets: false //不删除源文件
+	          })
+	        ]
+	      }
+	    } else {
+	      // 为开发环境修改配置...
+	      config.mode = 'development';
+	    }
+	    Object.assign(config, {
+	      // 开发生产共同配置
+	      // externals: {
+	      //   'vue': 'Vue',
+	      //   'element-ui': 'ELEMENT',
+	      //   'vue-router': 'VueRouter',
+	      //   'vuex': 'Vuex'
+	      // } // 防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(用于csdn引入)
+	      plugins:[
+	        ...config.plugins,
+	        new webpack.ProvidePlugin({
+	          jQuery: "jquery",
+	          $: "jquery",
+	          "windows.jQuery":"jquery"
+	        })
+	      ]
+	    });
+	  },
+	  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
+	  // css相关配置
+	  css: {
+	    extract: true, // 是否使用css分离插件 ExtractTextPlugin
+	    sourceMap: false, // 开启 CSS source maps?
+	    loaderOptions: {
+	      css: {}, // 这里的选项会传递给 css-loader
+	      postcss: {} // 这里的选项会传递给 postcss-loader
+	    }, // css预设器配置项
+	    modules: false // 启用 CSS modules for all css / pre-processor files.
+	  },
+	  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+	  pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
+	  // webpack-dev-server 相关配置
+	  devServer: {
+	    open: process.platform === 'darwin',
+	    host: '0.0.0.0', // 允许外部ip访问
+	    port: 8022, // 端口
+	    https: false, // 启用https
+	    overlay: {
+	      warnings: true,
+	      errors: true
+	    }, // 错误、警告在页面弹出
+	    proxy: {
+	      '/api': {
+	        target: `${process.env.VUE_APP_BASE_API}/api`,
+	        changeOrigin: true, // 允许websockets跨域
+	        // ws: true,
+	        pathRewrite: {
+	          '^/api': ''
+	        }
+	      }
+	    } // 代理转发配置，用于调试环境
+	  }, // 第三方插件配置
+	  pluginOptions: {}
+	};
+
+> <font color>注</font>：如需其他的配置可在上方[官网配置指南](https://cli.vuejs.org/zh/config/#vue-config-js "官网配置指南")中查找相关配置。
